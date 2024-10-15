@@ -7,50 +7,21 @@ My name is **Justin**, and I'm a 20-year-old developer from Germany. I enjoy bui
 If you're wondering, my favorite anime is **Noragami** and my favorite video game is **Tower Unite**.
 
 [![Discord Presence](https://lanyard.cnrad.dev/api/402483602094555138)](https://discord.com/users/402483602094555138)
+[![Justin's GitHub stats](https://github-readme-stats.vercel.app/api?username=newtox&show_icons=true&theme=tokyonight&hide_border=true&count_private=true)](https://github.com/anuraghazra/github-readme-stats)
+[![Most used Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=newtox&layout=compact&theme=tokyonight&hide_border=true)](https://github.com/anuraghazra/github-readme-stats)
 
 ## 🔧 Technologies & Tools I Use
 
 <details>
 <summary>Programming Languages</summary>
 
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![C#](https://img.shields.io/badge/C%23-99CC00?style=for-the-badge&logo=sharp&logoColor=white)
 ![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
-![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=csharp&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white)
 ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white)
-
-</details>
-
-<details>
-<summary>Frameworks & Libraries</summary>
-
-![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Svelte](https://img.shields.io/badge/Svelte-FF3E00?style=for-the-badge&logo=svelte&logoColor=white)
-![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
-![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![Preact](https://img.shields.io/badge/Preact-000000?style=for-the-badge&logo=preact&logoColor=white)
-
-</details>
-
-<details>
-<summary>Shell Scripting</summary>
-
-![Shell](https://img.shields.io/badge/Shell-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white)
-![Batch](https://img.shields.io/badge/Batch-1F90E6?style=for-the-badge&logo=windows&logoColor=white)
-
-</details>
-
-<details>
-<summary>Databases</summary>
-
-![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 
 </details>
 
@@ -62,101 +33,156 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 ![Sass](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white)
 ![Markdown](https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white)
 ![JSON](https://img.shields.io/badge/JSON-000000?style=for-the-badge&logo=json&logoColor=white)
-![YAML](https://img.shields.io/badge/YAML-4B4B4B?style=for-the-badge&logo=yaml&logoColor=white)
+![YAML](https://img.shields.io/badge/YAML-CB171E?style=for-the-badge&logo=yaml&logoColor=white)
 
 </details>
 
 <details>
-<summary>Mobile & Game Development</summary>
+<summary>Frameworks & Libraries</summary>
 
-![Android Studio](https://img.shields.io/badge/Android%20Studio-3DDC84?style=for-the-badge&logo=android-studio&logoColor=white)
-![Godot](https://img.shields.io/badge/Godot-478CBF?style=for-the-badge&logo=godot-engine&logoColor=white)
-![Roblox Studio](https://img.shields.io/badge/Roblox%20Studio-FF2D20?style=for-the-badge&logo=roblox&logoColor=white)
+![Astro](https://img.shields.io/badge/Astro-BC52EE?style=for-the-badge&logo=astro&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
+![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+![Electron](https://img.shields.io/badge/Electron-47848F?style=for-the-badge&logo=electron&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![Svelte](https://img.shields.io/badge/Svelte-FF3E00?style=for-the-badge&logo=svelte&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 
 </details>
 
 <details>
-<summary>Miscellaneous Tools & Platforms</summary>
+<summary>IDEs</summary>
 
-![Electron](https://img.shields.io/badge/Electron-2C2D72?style=for-the-badge&logo=electron&logoColor=white)
-![Heroku](https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Vagrant](https://img.shields.io/badge/Vagrant-1563FF?style=for-the-badge&logo=vagrant&logoColor=white)
-![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)
-![FileZilla](https://img.shields.io/badge/FileZilla-0066CC?style=for-the-badge&logo=filezilla&logoColor=white)
-![CurseForge](https://img.shields.io/badge/CurseForge-FF6F00?style=for-the-badge&logo=curseforge&logoColor=white)
-![Creative Commons](https://img.shields.io/badge/Creative%20Commons-000000?style=for-the-badge&logo=creative-commons&logoColor=white)
+![Notepad++](https://img.shields.io/badge/Notepad++-90E59A?style=for-the-badge&logo=notepadplusplus&logoColor=black)
+![PhpStorm](https://img.shields.io/badge/PhpStorm-000000?style=for-the-badge&logo=phpstorm&logoColor=white)
+![VSCodium](https://img.shields.io/badge/VSCodium-2F80ED?style=for-the-badge&logo=vscodium&logoColor=white)
 
 </details>
 
 <details>
 <summary>Version Control</summary>
 
+![Bitbucket](https://img.shields.io/badge/Bitbucket-0052CC?style=for-the-badge&logo=bitbucket&logoColor=white)
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
-![Bitbucket](https://img.shields.io/badge/Bitbucket-0052CC?style=for-the-badge&logo=bitbucket&logoColor=white)
 
 </details>
 
 <details>
-<summary>Authentication & Security</summary>
+<summary>Deployment Tools</summary>
 
-![Authy](https://img.shields.io/badge/Authy-8A3FFC?style=for-the-badge&logo=authy&logoColor=white)
-![Dashlane](https://img.shields.io/badge/Dashlane-00A8FF?style=for-the-badge&logo=dashlane&logoColor=white)
-![Bitwarden](https://img.shields.io/badge/Bitwarden-1E1E1E?style=for-the-badge&logo=bitwarden&logoColor=white)
-![Vaultwarden](https://img.shields.io/badge/Vaultwarden-1E1E1E?style=for-the-badge&logo=bitwarden&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-DD2C00?style=for-the-badge&logo=firebase&logoColor=white)
+![Heroku](https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white)
 
 </details>
 
 <details>
-<summary>Cloud & Hosting Services</summary>
+<summary>Scripting</summary>
 
-![Apache](https://img.shields.io/badge/Apache-D22128?style=for-the-badge&logo=apache&logoColor=white)
-![OVH](https://img.shields.io/badge/OVH-005A97?style=for-the-badge&logo=ovh&logoColor=white)
+![Shell](https://img.shields.io/badge/Shell-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white)
+
+</details>
+
+<details>
+<summary>Databases</summary>
+
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-003B57?style=for-the-badge&logo=postgresql&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 
 </details>
 
 <details>
 <summary>Package Managers</summary>
 
-![NPM](https://img.shields.io/badge/NPM-CB3837?style=for-the-badge&logo=npm&logoColor=white)
 ![Composer](https://img.shields.io/badge/Composer-885630?style=for-the-badge&logo=composer&logoColor=white)
-![Chocolatey](https://img.shields.io/badge/Chocolatey-3D3D3D?style=for-the-badge&logo=chocolatey&logoColor=white)
-![NuGet](https://img.shields.io/badge/NuGet-1C5B8E?style=for-the-badge&logo=nuget&logoColor=white)
+![Chocolatey](https://img.shields.io/badge/Chocolatey-80B5E3?style=for-the-badge&logo=chocolatey&logoColor=white)
+![NPM](https://img.shields.io/badge/NPM-CB3837?style=for-the-badge&logo=npm&logoColor=white)
+![NuGet](https://img.shields.io/badge/NuGet-004880?style=for-the-badge&logo=nuget&logoColor=white)
+![pNPm](https://img.shields.io/badge/pNPm-69220?style=for-the-badge&logo=pnpm&logoColor=white)
+![Yarn](https://img.shields.io/badge/Yarn-2C8EBB?style=for-the-badge&logo=yarn&logoColor=white)
 
 </details>
 
 <details>
-<summary>Development Tools</summary>
+<summary>Authentication & Security</summary>
 
-![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
-![PHPStorm](https://img.shields.io/badge/PHPStorm-000000?style=for-the-badge&logo=phpstorm&logoColor=white)
-![Notepad++](https://img.shields.io/badge/Notepad++-90C53F?style=for-the-badge&logo=notepad++&logoColor=white)
-![XAMPP](https://img.shields.io/badge/XAMPP-FE7D3D?style=for-the-badge&logo=xampp&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Vagrant](https://img.shields.io/badge/Vagrant-1563FF?style=for-the-badge&logo=vagrant&logoColor=white)
+![Authy](https://img.shields.io/badge/Authy-EC1C24?style=for-the-badge&logo=authy&logoColor=white)
+![Dashlane](https://img.shields.io/badge/Dashlane-0E353D?style=for-the-badge&logo=dashlane&logoColor=white)
+![Bitwarden](https://img.shields.io/badge/Bitwarden-175DDC?style=for-the-badge&logo=bitwarden&logoColor=white)
+![Vaultwarden](https://img.shields.io/badge/Vaultwarden-000000?style=for-the-badge&logo=vaultwarden&logoColor=white)
+
+</details>
+
+<details>
+<summary>Hosting Services</summary>
+
+![Apache](https://img.shields.io/badge/Apache-D22128?style=for-the-badge&logo=apache&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)
+![OVH](https://img.shields.io/badge/OVH-123F6D?style=for-the-badge&logo=ovh&logoColor=white)
+
+</details>
+
+<details>
+<summary>Remote Tools</summary>
+
+![AnyDesk](https://img.shields.io/badge/AnyDesk-EF443B?style=for-the-badge&logo=anydesk&logoColor=white)
+![TeamViewer](https://img.shields.io/badge/TeamViewer-004680?style=for-the-badge&logo=teamviewer&logoColor=white)
+
+</details>
+
+<details>
+<summary>File Transfer Tools</summary>
+
+![FileZilla](https://img.shields.io/badge/FileZilla-BF0000?style=for-the-badge&logo=filezilla&logoColor=white)
+![MediaFire](https://img.shields.io/badge/MediaFire-1299F3?style=for-the-badge&logo=mediafire&logoColor=white)
+
+</details>
+
+<details>
+<summary>Media & Content Management</summary>
+
+![Creative Commons](https://img.shields.io/badge/Creative%20Commons-EF9421?style=for-the-badge&logo=creativecommons&logoColor=white)
+![CurseForge](https://img.shields.io/badge/CurseForge-F16436?style=for-the-badge&logo=curseforge&logoColor=white)
+![Sourceforge](https://img.shields.io/badge/Sourceforge-FF6600?style=for-the-badge&logo=sourceforge&logoColor=white)
+
+</details>
+
+<details>
+<summary>Mobile & Game Development</summary>
+
+![Android Studio](https://img.shields.io/badge/Android%20Studio-3DDC84?style=for-the-badge&logo=androidstudio&logoColor=white)
+![Godot](https://img.shields.io/badge/Godot-478CBF?style=for-the-badge&logo=godotengine&logoColor=white)
+![Roblox Studio](https://img.shields.io/badge/Roblox%20Studio-00A2FF?style=for-the-badge&logo=robloxstudio&logoColor=white)
+
+</details>
+
+<details>
+<summary>Utilities</summary>
+
+![Htop](https://img.shields.io/badge/htop-009020?style=for-the-badge&logo=htop&logoColor=white)
+![IFTTT](https://img.shields.io/badge/IFTTT-000000?style=for-the-badge&logo=ifttt&logoColor=white)
+![Speedtest](https://img.shields.io/badge/Speedtest-141526?style=for-the-badge&logo=speedtest&logoColor=white)
+![Termius](https://img.shields.io/badge/Termius-000000?style=for-the-badge&logo=termius&logoColor=white)
+![XAMPP](https://img.shields.io/badge/XAMPP-FB7A24?style=for-the-badge&logo=xampp&logoColor=white)
 
 </details>
 
 <details>
 <summary>Browsers</summary>
 
-![Firefox](https://img.shields.io/badge/Firefox-FF7139?style=for-the-badge&logo=firefox&logoColor=white)
-![Vivaldi](https://img.shields.io/badge/Vivaldi-4E8B8B?style=for-the-badge&logo=vivaldi&logoColor=white)
-![DuckDuckGo](https://img.shields.io/badge/DuckDuckGo-8B8B8B?style=for-the-badge&logo=duckduckgo&logoColor=white)
-![Tor Browser](https://img.shields.io/badge/Tor%20Browser-000000?style=for-the-badge&logo=tor-browser&logoColor=white)
-
-</details>
-
-<details>
-<summary>Additional Tools & Utilities</summary>
-
-![htop](https://img.shields.io/badge/htop-8E44AD?style=for-the-badge&logo=htop&logoColor=white)
-![IFTTT](https://img.shields.io/badge/IFTTT-00B8E4?style=for-the-badge&logo=ifttt&logoColor=white)
-![Speedtest](https://img.shields.io/badge/Speedtest-39B54A?style=for-the-badge&logo=speedtest&logoColor=white)
-![MediaFire](https://img.shields.io/badge/MediaFire-FFA200?style=for-the-badge&logo=mediafire&logoColor=white)
-![Termius](https://img.shields.io/badge/Termius-1E1E1E?style=for-the-badge&logo=termius&logoColor=white)
+![DuckDuckGo](https://img.shields.io/badge/DuckDuckGo-DE5833?style=for-the-badge&logo=duckduckgo&logoColor=white)
+![Firefox](https://img.shields.io/badge/Firefox-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white)
+![Tor Browser](https://img.shields.io/badge/Tor%20Browser-7D4698?style=for-the-badge&logo=torbrowser&logoColor=white)
+![Vivaldi](https://img.shields.io/badge/Vivaldi-EF3939?style=for-the-badge&logo=vivaldi&logoColor=white)
 
 </details>
 
@@ -164,16 +190,21 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 <summary>Learning Platforms</summary>
 
 ![Udemy](https://img.shields.io/badge/Udemy-A435F0?style=for-the-badge&logo=udemy&logoColor=white)
-![W3Schools](https://img.shields.io/badge/W3Schools-4D8CBA?style=for-the-badge&logo=w3schools&logoColor=white)
-![Fireship](https://img.shields.io/badge/Fireship-FF4B4B?style=for-the-badge&logo=fireship&logoColor=white)
+![W3Schools](https://img.shields.io/badge/W3Schools-04AA6D?style=for-the-badge&logo=w3schools&logoColor=white)
+![Fireship](https://img.shields.io/badge/Fireship-EB844E?style=for-the-badge&logo=fireship&logoColor=white)
 
 </details>
 
 <details>
-<summary>Development Concepts</summary>
+<summary>Operating Systems</summary>
 
-![Material Design](https://img.shields.io/badge/Material%20Design-6200EE?style=for-the-badge&logo=materialdesign&logoColor=white)
-![REST API](https://img.shields.io/badge/REST%20API-3F51B5?style=for-the-badge&logo=api&logoColor=white)
-![MQTT](https://img.shields.io/badge/MQTT-3C3C3C?style=for-the-badge&logo=message-queue&logoColor=white)
+![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)
+![Kali Linux](https://img.shields.io/badge/Kali%20Linux-557C94?style=for-the-badge&logo=kalilinux&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=white)
+![SteamOS](https://img.shields.io/badge/SteamOS-1A9FFF?style=for-the-badge&logo=steamdeck&logoColor=white)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
+![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+
+</details>
 
 </details>
