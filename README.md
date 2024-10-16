@@ -16,6 +16,7 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 <summary>Programming Languages</summary>
 
 ![C#](https://img.shields.io/badge/C%23-99CC00?style=for-the-badge&logo=sharp&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white)
 ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white)
@@ -40,6 +41,7 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 <details>
 <summary>Frameworks & Libraries</summary>
 
+![.NET](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![Astro](https://img.shields.io/badge/Astro-BC52EE?style=for-the-badge&logo=astro&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
@@ -53,6 +55,15 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![Svelte](https://img.shields.io/badge/Svelte-FF3E00?style=for-the-badge&logo=svelte&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+
+</details>
+
+<details>
+<summary>Mobile & Game Development</summary>
+
+![Android Studio](https://img.shields.io/badge/Android%20Studio-3DDC84?style=for-the-badge&logo=androidstudio&logoColor=white)
+![Godot](https://img.shields.io/badge/Godot-478CBF?style=for-the-badge&logo=godotengine&logoColor=white)
+![Roblox Studio](https://img.shields.io/badge/Roblox%20Studio-00A2FF?style=for-the-badge&logo=robloxstudio&logoColor=white)
 
 </details>
 
@@ -113,6 +124,30 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 </details>
 
 <details>
+<summary>Utilities</summary>
+
+![Htop](https://img.shields.io/badge/htop-009020?style=for-the-badge&logo=htop&logoColor=white)
+![IFTTT](https://img.shields.io/badge/IFTTT-000000?style=for-the-badge&logo=ifttt&logoColor=white)
+![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)
+![Speedtest](https://img.shields.io/badge/Speedtest-141526?style=for-the-badge&logo=speedtest&logoColor=white)
+![Termius](https://img.shields.io/badge/Termius-000000?style=for-the-badge&logo=termius&logoColor=white)
+![XAMPP](https://img.shields.io/badge/XAMPP-FB7A24?style=for-the-badge&logo=xampp&logoColor=white)
+
+</details>
+
+<details>
+<summary>Operating Systems</summary>
+
+![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)
+![Kali Linux](https://img.shields.io/badge/Kali%20Linux-557C94?style=for-the-badge&logo=kalilinux&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=white)
+![SteamOS](https://img.shields.io/badge/SteamOS-1A9FFF?style=for-the-badge&logo=steamdeck&logoColor=white)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
+![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+
+</details>
+
+<details>
 <summary>Authentication & Security</summary>
 
 ![Authy](https://img.shields.io/badge/Authy-EC1C24?style=for-the-badge&logo=authy&logoColor=white)
@@ -157,27 +192,6 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 </details>
 
 <details>
-<summary>Mobile & Game Development</summary>
-
-![Android Studio](https://img.shields.io/badge/Android%20Studio-3DDC84?style=for-the-badge&logo=androidstudio&logoColor=white)
-![Godot](https://img.shields.io/badge/Godot-478CBF?style=for-the-badge&logo=godotengine&logoColor=white)
-![Roblox Studio](https://img.shields.io/badge/Roblox%20Studio-00A2FF?style=for-the-badge&logo=robloxstudio&logoColor=white)
-
-</details>
-
-<details>
-<summary>Utilities</summary>
-
-![Htop](https://img.shields.io/badge/htop-009020?style=for-the-badge&logo=htop&logoColor=white)
-![IFTTT](https://img.shields.io/badge/IFTTT-000000?style=for-the-badge&logo=ifttt&logoColor=white)
-![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)
-![Speedtest](https://img.shields.io/badge/Speedtest-141526?style=for-the-badge&logo=speedtest&logoColor=white)
-![Termius](https://img.shields.io/badge/Termius-000000?style=for-the-badge&logo=termius&logoColor=white)
-![XAMPP](https://img.shields.io/badge/XAMPP-FB7A24?style=for-the-badge&logo=xampp&logoColor=white)
-
-</details>
-
-<details>
 <summary>Browsers</summary>
 
 ![DuckDuckGo](https://img.shields.io/badge/DuckDuckGo-DE5833?style=for-the-badge&logo=duckduckgo&logoColor=white)
@@ -193,18 +207,6 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 ![Udemy](https://img.shields.io/badge/Udemy-A435F0?style=for-the-badge&logo=udemy&logoColor=white)
 ![W3Schools](https://img.shields.io/badge/W3Schools-04AA6D?style=for-the-badge&logo=w3schools&logoColor=white)
 ![Fireship](https://img.shields.io/badge/Fireship-EB844E?style=for-the-badge&logo=fireship&logoColor=white)
-
-</details>
-
-<details>
-<summary>Operating Systems</summary>
-
-![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)
-![Kali Linux](https://img.shields.io/badge/Kali%20Linux-557C94?style=for-the-badge&logo=kalilinux&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=white)
-![SteamOS](https://img.shields.io/badge/SteamOS-1A9FFF?style=for-the-badge&logo=steamdeck&logoColor=white)
-![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
-![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 
 </details>
 
