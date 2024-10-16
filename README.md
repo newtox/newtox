@@ -210,4 +210,33 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 
 </details>
 
+<details>
+<summary>Platforms I use</summary>
+
+![Battle.net](https://img.shields.io/badge/Battle.net-4381C3?style=for-the-badge&logo=battledotnet&logoColor=white)
+![Bungie.net](https://img.shields.io/badge/Bungie.net-0075BB?style=for-the-badge&logo=bungie&logoColor=white)
+![Crunchyroll](https://img.shields.io/badge/Crunchyroll-F47521?style=for-the-badge&logo=crunchyroll&logoColor=white)
+![Epic Games](https://img.shields.io/badge/EpicGames-313131?style=for-the-badge&logo=epicgames&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
+![League of Legends](https://img.shields.io/badge/LoL-C28F2C?style=for-the-badge&logo=leagueoflegends&logoColor=white)
+![Nintendo](https://img.shields.io/badge/Nintendo-E60012?style=for-the-badge&logo=nintendo&logoColor=white)
+![Nintendo 3DS](https://img.shields.io/badge/3DS-D12228?style=for-the-badge&logo=nintendo3ds&logoColor=white)
+![Nintendo Switch](https://img.shields.io/badge/Switch-E60012?style=for-the-badge&logo=nintendoswitch&logoColor=white)
+![PayPal](https://img.shields.io/badge/PayPal-003087?style=for-the-badge&logo=paypal&logoColor=white)
+![Riot Games](https://img.shields.io/badge/Riot-EB0029?style=for-the-badge&logo=riotgames&logoColor=white)
+![Rockstar Games](https://img.shields.io/badge/Rockstar-FCAF17?style=for-the-badge&logo=rockstargames&logoColor=white)
+![Roblox](https://img.shields.io/badge/Roblox-000000?style=for-the-badge&logo=roblox&logoColor=white)
+![Spotify](https://img.shields.io/badge/Spotify-1DB954?style=for-the-badge&logo=spotify&logoColor=white)
+![Steam](https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white)
+![TeamSpeak](https://img.shields.io/badge/TeamSpeak-4B69B6?style=for-the-badge&logo=teamspeak&logoColor=white)
+![Twitch](https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white)
+![X](https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white)
+![Xbox](https://img.shields.io/badge/Xbox-06B632?style=for-the-badge&logo=xbox&logoColor=white)
+![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=x&youtube=white)
+![YouTube Gaming](https://img.shields.io/badge/YouTubeGaming-FF0000?style=for-the-badge&logo=youtubegaming&logoColor=white)
+![YouTube Shorts](https://img.shields.io/badge/YouTubeShorts-FF0000?style=for-the-badge&logo=youtubeshorts&logoColor=white)
+![YouTube Studio](https://img.shields.io/badge/YouTubeStudio-FF0000?style=for-the-badge&logo=youtubestudio&logoColor=white)
+
+</details>
+
 </details>
