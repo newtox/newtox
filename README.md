@@ -6,9 +6,17 @@ My name is **Justin**, and I'm a 20-year-old developer from Germany. I enjoy bui
 
 If you're wondering, my favorite anime is **Noragami** and my favorite video game is **Tower Unite**.
 
-[![Discord Presence](https://lanyard.cnrad.dev/api/402483602094555138)](https://discord.com/users/402483602094555138)
-[![Justin's GitHub stats](https://github-readme-stats.vercel.app/api?username=newtox&show_icons=true&theme=tokyonight&hide_border=true&count_private=true)](https://github.com/anuraghazra/github-readme-stats)
-[![Most used Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=newtox&layout=compact&theme=tokyonight&hide_border=true)](https://github.com/anuraghazra/github-readme-stats)
+<div style="display: flex; justify-content: flex-start; align-items: center; gap: 10px;">
+    <a href="https://discord.com/users/402483602094555138">
+        <img src="https://lanyard.cnrad.dev/api/402483602094555138?bg=1a1b27&showDisplayName=true" style="border: none;">
+    </a>
+    <a href="https://github.com/anuraghazra/github-readme-stats">
+        <img src="https://github-readme-stats.vercel.app/api?username=newtox&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" style="border: none;">
+    </a>
+    <a href="https://github.com/anuraghazra/github-readme-stats">
+        <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=newtox&layout=compact&theme=tokyonight&hide_border=true&langs_count=10" style="border: none;">
+    </a>
+</div>
 
 ## 🔧 Technologies & Tools I Use
 
