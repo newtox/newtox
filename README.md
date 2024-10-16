@@ -204,9 +204,10 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 <details>
 <summary>Learning Platforms</summary>
 
+![Fireship](https://img.shields.io/badge/Fireship-EB844E?style=for-the-badge&logo=fireship&logoColor=white)
+![Stack Overflow](https://img.shields.io/badge/StackOverflow-F58025?style=for-the-badge&logo=stackoverflow&logoColor=white)
 ![Udemy](https://img.shields.io/badge/Udemy-A435F0?style=for-the-badge&logo=udemy&logoColor=white)
 ![W3Schools](https://img.shields.io/badge/W3Schools-04AA6D?style=for-the-badge&logo=w3schools&logoColor=white)
-![Fireship](https://img.shields.io/badge/Fireship-EB844E?style=for-the-badge&logo=fireship&logoColor=white)
 
 </details>
 
