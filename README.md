@@ -7,8 +7,8 @@ My name is **Justin**, and I'm a 20-year-old developer from Germany. I enjoy bui
 If you're wondering, my favorite anime is **Noragami** and my favorite video game is **Tower Unite**.
 
 [![Discord Presence](https://lanyard.cnrad.dev/api/402483602094555138)](https://discord.com/users/402483602094555138)
-[![Justin's GitHub stats](https://github-readme-stats.vercel.app/api?username=newtox&show_icons=true&theme=tokyonight&hide_border=true&count_private=true)](https://github.com/anuraghazra/github-readme-stats)
-[![Most used Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=newtox&layout=compact&theme=tokyonight&hide_border=true)](https://github.com/anuraghazra/github-readme-stats)
+[![Justin's GitHub stats](https://github-readme-stats.vercel.app/api?username=newtox&theme=tokyonight&number_format=long&include_all_commits=true&show_icons=true&hide_border=true&count_private=true&show=reviews,discussions_started,discussions_answered,prs_merged,prs_merged_percentage)](https://github.com/anuraghazra/github-readme-stats)
+[![Most used Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=newtox&hide_border=true&theme=tokyonight&layout=donut-vertical&langs_count=20)](https://github.com/anuraghazra/github-readme-stats)
 
 ## 🔧 Technologies & Tools I Use
 
