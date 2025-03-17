@@ -2,7 +2,7 @@
 
 ### 📖 About Me
 
-My name is **Justin**, and I'm a 20-year-old developer from Germany. I enjoy building my Discord bot, playing video games, watching anime, and improving my skills in web development. My programming journey began with **JavaScript** using **Visual Studio Code**, and now I’m continually learning new technologies.
+My name is **Justin**, and I'm a 21-year-old developer from Germany. I enjoy building my Discord bot, playing video games, watching anime, and improving my skills in web development. My programming journey began with **JavaScript** using **Visual Studio Code**, and now I’m continually learning new technologies.
 
 If you're wondering, my favorite anime is **Noragami** and my favorite video game is **Tower Unite**.
 
