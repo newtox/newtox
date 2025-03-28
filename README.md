@@ -7,8 +7,8 @@ My name is **Justin**, and I'm a 21-year-old developer from Germany. I enjoy bui
 If you're wondering, my favorite anime is **Noragami** and my favorite video game is **Tower Unite**.
 
 [![Discord Presence](https://lanyard.cnrad.dev/api/402483602094555138)](https://discord.com/users/402483602094555138)
-[![Justin's GitHub stats](https://github-readme-stats.vercel.app/api?username=newtox&theme=tokyonight&number_format=long&include_all_commits=true&show_icons=true&hide_border=true&count_private=true&show=reviews,discussions_started,discussions_answered,prs_merged,prs_merged_percentage)](https://github.com/anuraghazra/github-readme-stats)
-[![Most used Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=newtox&hide_border=true&theme=tokyonight&layout=donut-vertical&langs_count=20)](https://github.com/anuraghazra/github-readme-stats)
+[![Justin's GitHub stats](https://github-readme-stats.vercel.app/api?username=newtox&theme=tokyonight&number_format=long&include_all_commits=true&show_icons=true&hide_border=true&count_private=true)](https://github.com/anuraghazra/github-readme-stats)
+[![Most used Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=newtox&hide_border=true&theme=tokyonight&layout=compact&langs_count=20)](https://github.com/anuraghazra/github-readme-stats)
 
 ## 🔧 Technologies & Tools I Use
 
@@ -18,7 +18,7 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 ![C#](https://img.shields.io/badge/C%23-99CC00?style=for-the-badge&logo=sharp&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -91,6 +91,7 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-DD2C00?style=for-the-badge&logo=firebase&logoColor=white)
 ![Heroku](https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white)
+![Portainer](https://img.shields.io/badge/Portainer-13BEF9?style=for-the-badge&logo=portainer&logoColor=white)
 
 </details>
 
@@ -140,8 +141,10 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 
 ![Android](https://img.shields.io/badge/Android-34A853?style=for-the-badge&logo=android&logoColor=white)
 ![Arch Linux](https://img.shields.io/badge/Arch%20Linux-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)
+![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white)
 ![Kali Linux](https://img.shields.io/badge/Kali%20Linux-557C94?style=for-the-badge&logo=kalilinux&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=white)
+![KDE Plasma](https://img.shields.io/badge/KDE%20Plasma-1D99F3?style=for-the-badge&logo=kde&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 ![Raspberry Pi](https://img.shields.io/badge/RaspberryPi-A22846?style=for-the-badge&logo=raspberrypi&logoColor=white)
 ![SteamOS](https://img.shields.io/badge/SteamOS-1A9FFF?style=for-the-badge&logo=steamdeck&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
@@ -163,6 +166,7 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 <summary>Hosting Services</summary>
 
 ![Apache](https://img.shields.io/badge/Apache-D22128?style=for-the-badge&logo=apache&logoColor=white)
+![Caddy](https://img.shields.io/badge/Caddy-1F88C0?style=for-the-badge&logo=caddy&logoColor=white)
 ![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)
 ![OVH](https://img.shields.io/badge/OVH-123F6D?style=for-the-badge&logo=ovh&logoColor=white)
 
@@ -172,6 +176,7 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 <summary>Remote Tools</summary>
 
 ![AnyDesk](https://img.shields.io/badge/AnyDesk-EF443B?style=for-the-badge&logo=anydesk&logoColor=white)
+![RustDesk](https://img.shields.io/badge/RustDesk-024EFF?style=for-the-badge&logo=rustdesk&logoColor=white)
 ![TeamViewer](https://img.shields.io/badge/TeamViewer-004680?style=for-the-badge&logo=teamviewer&logoColor=white)
 
 </details>
@@ -207,6 +212,7 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 <summary>Learning Platforms</summary>
 
 ![Fireship](https://img.shields.io/badge/Fireship-EB844E?style=for-the-badge&logo=fireship&logoColor=white)
+![Moodle](https://img.shields.io/badge/Moodle-F98012?style=for-the-badge&logo=moodle&logoColor=white)
 ![Stack Overflow](https://img.shields.io/badge/StackOverflow-F58025?style=for-the-badge&logo=stackoverflow&logoColor=white)
 ![Udemy](https://img.shields.io/badge/Udemy-A435F0?style=for-the-badge&logo=udemy&logoColor=white)
 ![W3Schools](https://img.shields.io/badge/W3Schools-04AA6D?style=for-the-badge&logo=w3schools&logoColor=white)
@@ -214,37 +220,58 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 </details>
 
 <details>
-<summary>Platforms I use</summary>
+<summary>Gaming Platforms</summary>
 
 ![Battle.net](https://img.shields.io/badge/Battle.net-4381C3?style=for-the-badge&logo=battledotnet&logoColor=white)
 ![Bungie.net](https://img.shields.io/badge/Bungie.net-0075BB?style=for-the-badge&logo=bungie&logoColor=white)
-![Crunchyroll](https://img.shields.io/badge/Crunchyroll-F47521?style=for-the-badge&logo=crunchyroll&logoColor=white)
-![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)
 ![Epic Games](https://img.shields.io/badge/EpicGames-313131?style=for-the-badge&logo=epicgames&logoColor=white)
-![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
-![Gmail](https://img.shields.io/badge/Gmail-EA4335?style=for-the-badge&logo=gmail&logoColor=white)
 ![League of Legends](https://img.shields.io/badge/LoL-C28F2C?style=for-the-badge&logo=leagueoflegends&logoColor=white)
-![Nintendo](https://img.shields.io/badge/Nintendo-E60012?style=for-the-badge&logo=nintendo&logoColor=white)
-![Nintendo 3DS](https://img.shields.io/badge/3DS-D12228?style=for-the-badge&logo=nintendo3ds&logoColor=white)
-![Nintendo Switch](https://img.shields.io/badge/Switch-E60012?style=for-the-badge&logo=nintendoswitch&logoColor=white)
-![PayPal](https://img.shields.io/badge/PayPal-003087?style=for-the-badge&logo=paypal&logoColor=white)
 ![Riot Games](https://img.shields.io/badge/Riot-EB0029?style=for-the-badge&logo=riotgames&logoColor=white)
 ![Rockstar Games](https://img.shields.io/badge/Rockstar-FCAF17?style=for-the-badge&logo=rockstargames&logoColor=white)
 ![Roblox](https://img.shields.io/badge/Roblox-000000?style=for-the-badge&logo=roblox&logoColor=white)
-![Shazam](https://img.shields.io/badge/Shazam-0088FF?style=for-the-badge&logo=shazam&logoColor=white)
-![Spotify](https://img.shields.io/badge/Spotify-1DB954?style=for-the-badge&logo=spotify&logoColor=white)
 ![Steam](https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white)
+</details>
+
+<details>
+<summary>Social & Communication</summary>
+
+![Bluesky](https://img.shields.io/badge/Bluesky-0285FF?style=for-the-badge&logo=bluesky&logoColor=white)
+![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
+![Gmail](https://img.shields.io/badge/Gmail-EA4335?style=for-the-badge&logo=gmail&logoColor=white)
 ![TeamSpeak](https://img.shields.io/badge/TeamSpeak-4B69B6?style=for-the-badge&logo=teamspeak&logoColor=white)
 ![Telegram](https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)
-![Twitch](https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white)
 ![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)
 ![X](https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white)
-![Xbox](https://img.shields.io/badge/Xbox-06B632?style=for-the-badge&logo=xbox&logoColor=white)
-![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=x&youtube=white)
+</details>
+
+<details>
+<summary>Media & Entertainment</summary>
+
+![Crunchyroll](https://img.shields.io/badge/Crunchyroll-F47521?style=for-the-badge&logo=crunchyroll&logoColor=white)
+![Netflix](https://img.shields.io/badge/Netflix-E50914?style=for-the-badge&logo=netflix&logoColor=white)
+![Paramount+](https://img.shields.io/badge/Paramount+-0064FF?style=for-the-badge&logo=paramountplus&logoColor=white)
+![Shazam](https://img.shields.io/badge/Shazam-0088FF?style=for-the-badge&logo=shazam&logoColor=white)
+![Spotify](https://img.shields.io/badge/Spotify-1DB954?style=for-the-badge&logo=spotify&logoColor=white)
+![Twitch](https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white)
+</details>
+
+<details>
+<summary>YouTube Ecosystem</summary>
+
+![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)
 ![YouTube Gaming](https://img.shields.io/badge/YouTubeGaming-FF0000?style=for-the-badge&logo=youtubegaming&logoColor=white)
 ![YouTube Shorts](https://img.shields.io/badge/YouTubeShorts-FF0000?style=for-the-badge&logo=youtubeshorts&logoColor=white)
 ![YouTube Studio](https://img.shields.io/badge/YouTubeStudio-FF0000?style=for-the-badge&logo=youtubestudio&logoColor=white)
-
 </details>
+
+<details>
+<summary>Payment & Services</summary>
+
+![Revolut](https://img.shields.io/badge/Revolut-191C1F?style=for-the-badge&logo=revolut&logoColor=white)
+![PayPal](https://img.shields.io/badge/PayPal-003087?style=for-the-badge&logo=paypal&logoColor=white)
+![Sparkasse](https://img.shields.io/badge/Sparkasse-FF0000?style=for-the-badge&logo=sparkasse&logoColor=white)
+</details>
+
 
 </details>
