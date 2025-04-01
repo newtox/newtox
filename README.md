@@ -127,11 +127,15 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 <details>
 <summary>Utilities</summary>
 
+![Google Lens](https://img.shields.io/badge/Google%20Lens-4285F4?style=for-the-badge&logo=googlelens&logoColor=white)
+![Google Maps](https://img.shields.io/badge/Google%20Maps-4285F4?style=for-the-badge&logo=googlemaps&logoColor=white)
 ![Htop](https://img.shields.io/badge/htop-009020?style=for-the-badge&logo=htop&logoColor=white)
 ![IFTTT](https://img.shields.io/badge/IFTTT-000000?style=for-the-badge&logo=ifttt&logoColor=white)
+![Nodemon](https://img.shields.io/badge/Nodemon-76D04B?style=for-the-badge&logo=nodemon&logoColor=white)
 ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)
 ![Speedtest](https://img.shields.io/badge/Speedtest-141526?style=for-the-badge&logo=speedtest&logoColor=white)
 ![Termius](https://img.shields.io/badge/Termius-000000?style=for-the-badge&logo=termius&logoColor=white)
+![Toggl Track](https://img.shields.io/badge/Toggl%20Track-E57CD8?style=for-the-badge&logo=toggltrack&logoColor=white)
 ![XAMPP](https://img.shields.io/badge/XAMPP-FB7A24?style=for-the-badge&logo=xampp&logoColor=white)
 
 </details>
@@ -220,6 +224,14 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 </details>
 
 <details>
+<summary>AI & Machine Learning</summary>
+
+![Claude](https://img.shields.io/badge/Claude-D97757?style=for-the-badge&logo=claude&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
+</details>
+
+<details>
 <summary>Gaming Platforms</summary>
 
 ![Battle.net](https://img.shields.io/badge/Battle.net-4381C3?style=for-the-badge&logo=battledotnet&logoColor=white)
@@ -239,8 +251,10 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 ![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)
 ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)
 ![Gmail](https://img.shields.io/badge/Gmail-EA4335?style=for-the-badge&logo=gmail&logoColor=white)
+![Mattermost](https://img.shields.io/badge/Mattermost-0058CC?style=for-the-badge&logo=mattermost&logoColor=white)
 ![TeamSpeak](https://img.shields.io/badge/TeamSpeak-4B69B6?style=for-the-badge&logo=teamspeak&logoColor=white)
 ![Telegram](https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)
+![Top.gg](https://img.shields.io/badge/Top.gg-FF3366?style=for-the-badge&logo=topdotgg&logoColor=white)
 ![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)
 ![X](https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white)
 </details>
@@ -248,7 +262,9 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 <details>
 <summary>Media & Entertainment</summary>
 
+![Chromecast](https://img.shields.io/badge/Chromecast-999999?style=for-the-badge&logo=chromecast&logoColor=white)
 ![Crunchyroll](https://img.shields.io/badge/Crunchyroll-F47521?style=for-the-badge&logo=crunchyroll&logoColor=white)
+![Google Play](https://img.shields.io/badge/Google%20Play-414141?style=for-the-badge&logo=googleplay&logoColor=white)
 ![Netflix](https://img.shields.io/badge/Netflix-E50914?style=for-the-badge&logo=netflix&logoColor=white)
 ![Paramount+](https://img.shields.io/badge/Paramount+-0064FF?style=for-the-badge&logo=paramountplus&logoColor=white)
 ![Shazam](https://img.shields.io/badge/Shazam-0088FF?style=for-the-badge&logo=shazam&logoColor=white)
@@ -271,7 +287,8 @@ If you're wondering, my favorite anime is **Noragami** and my favorite video gam
 ![Revolut](https://img.shields.io/badge/Revolut-191C1F?style=for-the-badge&logo=revolut&logoColor=white)
 ![PayPal](https://img.shields.io/badge/PayPal-003087?style=for-the-badge&logo=paypal&logoColor=white)
 ![Sparkasse](https://img.shields.io/badge/Sparkasse-FF0000?style=for-the-badge&logo=sparkasse&logoColor=white)
+![Telekom](https://img.shields.io/badge/Telekom-E20074?style=for-the-badge&logo=deutschetelekom&logoColor=white)
+![Visa](https://img.shields.io/badge/Visa-1A1F71?style=for-the-badge&logo=visa&logoColor=white)
 </details>
-
 
 </details>
