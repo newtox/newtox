@@ -4,7 +4,7 @@
 
 My name is **Justin**, and I'm a 22-year-old developer from Germany. I enjoy building my Discord bot, playing video games, watching anime, and improving my skills in web development. My programming journey began with **JavaScript** using **Visual Studio Code**, and now I’m continually learning new technologies.
 
-If you're wondering, my favorite anime is **Noragami** and my favorite video game is **Tower Unite**.
+If you're wondering, my favorite anime is **Noragami** and my favorite video game is **Marvel Rivals**.
 
 [![Discord Presence](https://lanyard.cnrad.dev/api/402483602094555138)](https://discord.com/users/402483602094555138)
 [![Justin's GitHub stats](https://github-readme-stats.vercel.app/api?username=newtox&theme=tokyonight&number_format=long&include_all_commits=true&show_icons=true&hide_border=true&count_private=true)](https://github.com/anuraghazra/github-readme-stats)
