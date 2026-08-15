@@ -17,7 +17,7 @@ without manual startup, with all devices turning off automatically on screen loc
 |---|---|
 | `openrgb.desktop` | Autostart entry for OpenRGB itself (minimized) |
 | `openrgb-lock-hook.desktop` | Autostart entry for the lock-hook script |
-| `openrgb-lock-hook.sh` | Listens for screen lock/unlock via D-Bus. Turns all devices (including the motherboard) off on lock, restores the saved profile on unlock |
+| `openrgb-lock-hook.sh` | Listens for screen lock/unlock via D-Bus. Sets every device to a static orange directly (on script start, and on unlock), and turns everything off on lock |
 | `61-openrgb-kraken-v3.rules` | Extra udev rule for the Razer Kraken V3 HyperSense (missing from OpenRGB's official 0.9 udev rules) |
 
 ## Runtime layout
@@ -75,28 +75,27 @@ at login.
    kbuildsycoca6 --noincremental
 ```
 
-5. **Set up devices and colors once in the OpenRGB GUI**, then save a profile
-   named `Static Orange Razer All` (or update `openrgb-lock-hook.sh` if you use
-   a different name). This is the profile restored on unlock.
-
-6. **Enable the SDK server** inside OpenRGB (SDK Server tab) — required for the
+5. **Enable the SDK server** inside OpenRGB (SDK Server tab) — required for the
    lock hook to talk to the running instance.
 
-7. Reboot and verify: OpenRGB starts minimized → locking the screen (Win+L) turns
-   all five devices off, including the motherboard → unlocking restores the saved
-   profile.
+6. Reboot and verify: OpenRGB starts minimized → after ~5s all devices turn
+   orange → locking the screen (Win+L) turns all five off, including the
+   motherboard → unlocking turns them back to orange.
 
 ## Notes
 
+- No `.orp` profile is used. Loading a saved profile via OpenRGB's CLI turned
+  out to be unreliable (see below), so `openrgb-lock-hook.sh` sets each
+  device's color directly with `--device`/`--mode`/`--color` instead — both on
+  script start and on unlock.
 - The Kraken V3 HyperSense doesn't support the `Static` mode, only `Direct`,
-  `Breathing`, and `Wave` — so it's turned off using `--mode direct`, same as
-  the mouse, mousepad, and motherboard. The Huntsman V2 keyboard uses
-  `--mode static`, since `direct` alone left the top row (Esc, F1–F12,
-  Print/Scroll/Pause, media keys) still lit on that device.
-- Loading a saved `.orp` profile via CLI is a known-flaky upstream feature —
-  make sure the profile name in the script matches the saved profile exactly
-  (case-sensitive), or the unlock step silently fails with "Profile failed to
-  load".
+  `Breathing`, and `Wave` — so it (and the mainboard) use `--mode direct`. The
+  Huntsman V2 keyboard and Goliathus Extended mousepad use `--mode static`,
+  since `direct` alone intermittently left parts of them unlit or the wrong
+  color (keyboard top row, mousepad zones) when set via CLI.
+- The script waits 5 seconds after starting before setting colors, to give
+  OpenRGB time to fully start and its SDK server to become reachable (both
+  launch from autostart at roughly the same time).
 - Motherboard RGB staying lit during S3 suspend is a BIOS setting, not something
   this script controls — check Advanced → AURA / Onboard Devices in your BIOS
   if you want it to turn off on suspend too.
