@@ -1,0 +1,2 @@
+SUBSYSTEMS=="usb|hidraw", ATTRS{idVendor}=="1532", ATTRS{idProduct}=="0533", TAG+="uaccess", TAG+="Razer_Kraken_V3_HyperSense"
+SUBSYSTEMS=="usb|hidraw", ATTRS{idVendor}=="1532", ATTRS{idProduct}=="0549", TAG+="uaccess", TAG+="Razer_Kraken_V3"

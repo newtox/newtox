@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=OpenRGB Lock Hook
+Exec=/home/justin/.local/bin/openrgb-lock-hook.sh
+Type=Application
+Terminal=false
+NoDisplay=true

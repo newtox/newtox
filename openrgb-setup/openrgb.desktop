@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=OpenRGB
+Exec=/home/justin/.local/bin/OpenRGB.AppImage
+Icon=/home/justin/.local/share/icons/openrgb.png
+Type=Application
+Categories=Utility;
+Terminal=false
