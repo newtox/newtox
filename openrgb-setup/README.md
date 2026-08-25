@@ -16,7 +16,7 @@ screen lock.
 
 | File | Purpose |
 |---|---|
-| `openrgb.desktop` | Autostart entry for OpenRGB itself (minimized, forced to run via XWayland — see Notes) |
+| `openrgb.desktop` | Autostart entry for OpenRGB itself (minimized, forced to run via XWayland with the SDK server auto-started — see Notes) |
 | `openrgb-lock-hook.desktop` | Autostart entry for the lock-hook script |
 | `openrgb-lock-hook.sh` | Listens for screen lock/unlock via D-Bus. Sets every device (including the motherboard) to a static orange directly, and turns everything off on lock |
 | `61-openrgb-kraken-v3.rules` | Extra udev rule for the Razer Kraken V3 HyperSense (missing from OpenRGB's official 0.9 udev rules) |
@@ -76,30 +76,23 @@ at login.
    kbuildsycoca6 --noincremental
 ```
 
-5. **Enable the SDK server** inside OpenRGB (SDK Server tab). There's no
-   "auto-start server" option in this version — this has to be done manually
-   after every fresh boot, before the lock hook's CLI calls will work (they'll
-   otherwise fail silently with "Connection attempt failed" and spawn broken
-   standalone instances instead of talking to the running one).
-
-6. Reboot and verify: OpenRGB starts minimized → activate the SDK server once →
-   run the lock hook manually once (`~/.local/bin/openrgb-lock-hook.sh &`) →
-   locking the screen (Win+L) turns all five devices off, including the
-   motherboard → unlocking turns them back to orange.
+5. Reboot and verify: OpenRGB starts minimized with its SDK server already
+   active → after ~5s (the lock hook's startup delay) all devices turn
+   orange → locking the screen (Win+L) turns all five off, including the
+   motherboard → unlocking turns them back to orange. No manual steps needed.
 
 ## Notes
 
 - OpenRGB (Qt5, no bundled Wayland platform plugin) is started with
-  `QT_QPA_PLATFORM=xcb` to force it through XWayland. Without this, it races
-  XWayland's lazy startup on login — sometimes it wins and works fine, other
-  times OpenRGB starts, appears in `pgrep`, but never opens a window or SDK
-  server, causing every CLI call (including the lock hook) to silently spawn
-  broken standalone instances instead of connecting.
-- The SDK server's running state doesn't persist across restarts and has to
-  be enabled manually each boot (see step 5 above). If devices behave
-  unexpectedly after a reboot (e.g. the headset shows its firmware default
-  color instead of orange), check `pgrep -af OpenRGB.AppImage` is running and
-  the SDK server is on before assuming something else is broken.
+  `QT_QPA_PLATFORM=xcb --server`. `QT_QPA_PLATFORM=xcb` forces it through
+  XWayland — without it, it races XWayland's lazy startup on login and can
+  silently fail to open a window or SDK server (still shows up in `pgrep`,
+  but every CLI call then spawns broken standalone instances instead of
+  connecting). `--server` auto-starts the SDK server on launch, so it
+  doesn't need to be enabled manually in the GUI after every reboot.
+- Devices turn off/on one at a time rather than perfectly in sync, since
+  each is a separate sequential CLI invocation (each one reconnects to the
+  server from scratch). Noticeable but fast enough to not matter in practice.
 - The Kraken V3 HyperSense doesn't support the `Static` mode, only `Direct`,
   `Breathing`, and `Wave` — so it (and the mainboard) use `--mode direct`. The
   Huntsman V2 keyboard and Goliathus Extended mousepad use `--mode static`,
