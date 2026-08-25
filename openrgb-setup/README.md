@@ -1,7 +1,8 @@
 # OpenRGB Setup Scripts
 
-Personal automation scripts for running OpenRGB on Linux (Nobara/Fedora, KDE Plasma)
-without manual startup, with all devices turning off automatically on screen lock.
+Personal automation scripts for running OpenRGB on Linux (Nobara/Fedora, KDE Plasma
+Wayland) without manual startup, with all devices turning off automatically on
+screen lock.
 
 ## Hardware
 
@@ -15,9 +16,9 @@ without manual startup, with all devices turning off automatically on screen loc
 
 | File | Purpose |
 |---|---|
-| `openrgb.desktop` | Autostart entry for OpenRGB itself (minimized) |
+| `openrgb.desktop` | Autostart entry for OpenRGB itself (minimized, forced to run via XWayland — see Notes) |
 | `openrgb-lock-hook.desktop` | Autostart entry for the lock-hook script |
-| `openrgb-lock-hook.sh` | Listens for screen lock/unlock via D-Bus. Sets every device to a static orange directly (on script start, and on unlock), and turns everything off on lock |
+| `openrgb-lock-hook.sh` | Listens for screen lock/unlock via D-Bus. Sets every device (including the motherboard) to a static orange directly, and turns everything off on lock |
 | `61-openrgb-kraken-v3.rules` | Extra udev rule for the Razer Kraken V3 HyperSense (missing from OpenRGB's official 0.9 udev rules) |
 
 ## Runtime layout
@@ -75,32 +76,41 @@ at login.
    kbuildsycoca6 --noincremental
 ```
 
-5. **Enable the SDK server** inside OpenRGB (SDK Server tab) — required for the
-   lock hook to talk to the running instance.
+5. **Enable the SDK server** inside OpenRGB (SDK Server tab). There's no
+   "auto-start server" option in this version — this has to be done manually
+   after every fresh boot, before the lock hook's CLI calls will work (they'll
+   otherwise fail silently with "Connection attempt failed" and spawn broken
+   standalone instances instead of talking to the running one).
 
-6. Reboot and verify: OpenRGB starts minimized → after ~5s all devices turn
-   orange → locking the screen (Win+L) turns all five off, including the
+6. Reboot and verify: OpenRGB starts minimized → activate the SDK server once →
+   run the lock hook manually once (`~/.local/bin/openrgb-lock-hook.sh &`) →
+   locking the screen (Win+L) turns all five devices off, including the
    motherboard → unlocking turns them back to orange.
 
 ## Notes
 
-- No `.orp` profile is used. Loading a saved profile via OpenRGB's CLI turned
-  out to be unreliable (see below), so `openrgb-lock-hook.sh` sets each
-  device's color directly with `--device`/`--mode`/`--color` instead — both on
-  script start and on unlock.
+- OpenRGB (Qt5, no bundled Wayland platform plugin) is started with
+  `QT_QPA_PLATFORM=xcb` to force it through XWayland. Without this, it races
+  XWayland's lazy startup on login — sometimes it wins and works fine, other
+  times OpenRGB starts, appears in `pgrep`, but never opens a window or SDK
+  server, causing every CLI call (including the lock hook) to silently spawn
+  broken standalone instances instead of connecting.
+- The SDK server's running state doesn't persist across restarts and has to
+  be enabled manually each boot (see step 5 above). If devices behave
+  unexpectedly after a reboot (e.g. the headset shows its firmware default
+  color instead of orange), check `pgrep -af OpenRGB.AppImage` is running and
+  the SDK server is on before assuming something else is broken.
 - The Kraken V3 HyperSense doesn't support the `Static` mode, only `Direct`,
   `Breathing`, and `Wave` — so it (and the mainboard) use `--mode direct`. The
   Huntsman V2 keyboard and Goliathus Extended mousepad use `--mode static`,
   since `direct` alone intermittently left parts of them unlit or the wrong
   color (keyboard top row, mousepad zones) when set via CLI.
-- The script waits 5 seconds after starting before setting colors, to give
-  OpenRGB time to fully start and its SDK server to become reachable (both
-  launch from autostart at roughly the same time).
-- Motherboard RGB staying lit during S3 suspend is a BIOS setting, not something
-  this script controls — check Advanced → AURA / Onboard Devices in your BIOS
-  if you want it to turn off on suspend too.
-- An earlier version of this setup used a custom Python script
-  (`openrgb-python`) to drive a synced rainbow-cycle animation across devices,
-  since OpenRGB's built-in Effects tab config isn't saved in profiles and can't
-  be triggered from the CLI. That approach was dropped in favor of this simpler
-  static-color version.
+- No `.orp` profile is used. Loading a saved profile via OpenRGB's CLI turned
+  out to be unreliable, so the script sets each device's color directly
+  instead.
+- Motherboard RGB staying lit during S3 suspend is a BIOS setting, not
+  something this script controls — check Advanced → AURA / Onboard Devices
+  in your BIOS if you want it to turn off on suspend too.
+- Monitors not powering off on screen lock (Win+L) is a known, long-standing
+  NVIDIA + KWin + Wayland DPMS bug, unrelated to this setup. No fix applied —
+  screen locking itself still works fine, just without the monitor turning off.
