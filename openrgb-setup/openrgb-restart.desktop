@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=OpenRGB Neustart
+Comment=Startet OpenRGB und den Lock-Hook neu, falls Geräte nicht richtig erkannt wurden
+Exec=/home/justin/.local/bin/openrgb-restart.sh
+Icon=/home/justin/.local/share/icons/openrgb.png
+Type=Application
+Terminal=false
