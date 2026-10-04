@@ -17,8 +17,10 @@
 # What gets backed up / restored:
 #   - Backup:  the whole "Documents/Electronic Arts" folder of the prefix
 #              (saves, SavedSims, Mods, Options.ini) → ~/Sims3_Backup_<date>
-#   - Restore: all .sim files from SIMS_SOURCE into SavedSims,
-#              Options.ini (volume, graphics, camera …) and the Mods folder
+#   - Restore: all .sim files from SIMS_SOURCE into SavedSims, Options.ini
+#              (volume, graphics, camera …), save games (Saves), installed
+#              store content (DCCache), installed worlds (InstalledWorlds),
+#              lots/households (Library), saved outfits, exports and Mods
 #
 # Not included: EA/launcher logins (not needed – Steam handles ownership).
 #
@@ -52,7 +54,8 @@ Usage: $(basename "$0") [option]
 
   (no option)       Full reset: backup → delete prefix → rebuild → restore
   -b, --backup      Only create a backup
-  -r, --restore     Only restore Sims, settings and mods (newest backup)
+  -r, --restore     Only restore Sims, saves, content, settings and mods
+                    (newest backup)
   -f, --from DIR    Backup folder to restore from (use with -r)
   -h, --help        Show this help
 EOF
@@ -120,11 +123,29 @@ do_restore() {   # do_restore BACKUP_DIR
     opts=$(find "$from" -maxdepth 2 -type f -iname "Options.ini" | head -n1)
     [[ -n "$opts" ]] && cp "$opts" "$S3/Options.ini" && ok "Settings (Options.ini) restored"
 
+    # Game data folders from the backup's Sims 3 folder
+    local bs3 dir
+    bs3=$(find "$from" -maxdepth 1 -type d -name "*Sims 3" | head -n1)
+    if [[ -n "$bs3" ]]; then
+        for dir in Saves DCCache InstalledWorlds Library SavedOutfits Exports; do
+            if [[ -d "$bs3/$dir" && -n "$(ls -A "$bs3/$dir" 2>/dev/null)" ]]; then
+                mkdir -p "$S3/$dir" && cp -r "$bs3/$dir/." "$S3/$dir/" && ok "$dir restored"
+            fi
+        done
+        # SavedSims from the backup too (in addition to SIMS_SOURCE)
+        [[ -d "$bs3/SavedSims" ]] && cp -rn "$bs3/SavedSims/." "$S3/SavedSims/" 2>/dev/null
+    fi
+
     # Mods
     mods=$(find "$from" -maxdepth 2 -type d -name Mods | head -n1)
     if [[ -n "$mods" ]] && confirm "Restore Mods folder?" y; then
         mkdir -p "$S3/Mods" && cp -r "$mods/." "$S3/Mods/" && ok "Mods restored"
     fi
+
+    # Clear caches so the game rebuilds them with the restored content
+    rm -f "$S3"/*.cache 2>/dev/null
+    rm -rf "$S3/WorldCaches/"* 2>/dev/null
+    ok "Caches cleared"
 }
 
 full_reset() {
