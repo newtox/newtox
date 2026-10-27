@@ -1,0 +1,5 @@
+.bashrc
+.config/fastfetch
+.local/share/konsole
+.config/plasma-org.kde.plasma.desktop-appletsrc
+.config/kglobalshortcutsrc

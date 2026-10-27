@@ -1,8 +1,9 @@
 #!/bin/bash
 
-pkill -f OpenRGB.AppImage
 pkill -f openrgb-lock-hook.sh
-sleep 1
+pkill -f OpenRGB.AppImage
+fuser -k 6742/tcp > /dev/null 2>&1
+sleep 2
 
 QT_QPA_PLATFORM=xcb ~/.local/bin/OpenRGB.AppImage --server > /dev/null 2>&1 &
 disown
