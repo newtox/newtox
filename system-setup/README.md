@@ -35,6 +35,26 @@ shortcuts. Add or remove paths there, one per line, relative to `$HOME`.
 Re-run it after bigger changes to the system. Only the files listed above are
 replaced, anything else in the backup folder is left alone.
 
+## Automatic backup every 30 days
+
+```bash
+./install-timer.sh
+```
+
+Installs a systemd user timer that runs `auto-backup.sh` once a day (and 15 minutes
+after login). It only creates a backup if the last one is older than 30 days and
+the backup drive is mounted, so a switched-off PC or an unmounted drive never makes
+it skip a backup for a whole month. A desktop notification shows up when a backup
+was made. A manual `./backup.sh` also resets the 30 days.
+
+```bash
+systemctl --user list-timers system-backup.timer
+journalctl --user -u system-backup.service
+./install-timer.sh --remove
+```
+
+Use `BACKUP_INTERVAL_DAYS` in `auto-backup.sh` to change the interval.
+
 ## Restore on a fresh install
 
 Make sure the backup drive is mounted (open it once in Dolphin), then:
