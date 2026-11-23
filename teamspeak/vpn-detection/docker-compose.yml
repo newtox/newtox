@@ -20,11 +20,13 @@
 #   ASN_DIR          host folder with the ASN file, mounted read-only to /data (default: /opt/ts-vpn)
 #   ASN_KEYWORDS     provider name fragments, comma separated (default: built-in list)
 #   ASN_BLOCKLIST    ASN numbers, comma separated    (default: empty)
-#   ACTION           log, message, poke, move, kick, ban  (default: log,message)
+#   ACTION           log, message, poke, move, group, kick, ban  (default: log,message)
 #   MESSAGE          text for message and poke       (default: built-in text)
 #   KICK_MESSAGE     reason for kick                 (default: built-in text)
 #   BAN_SECONDS      duration of a ban in seconds    (default: 60)
 #   ACTION_DELAY     seconds between message/poke and kick/ban (default: 3)
+#   GROUP_SGID       server group ID given by the group action (default: empty)
+#   GROUP_REMOVE     remove that group again on a later clean join, 1 or 0 (default: 1)
 #   MOVE_CID         target channel ID for move      (default: empty)
 #   WHITELIST_UIDS   unique IDs that are never checked, comma separated
 #   WHITELIST_SGIDS  server group IDs that are never checked, comma separated
@@ -58,6 +60,8 @@ services:
       KICK_MESSAGE: ${KICK_MESSAGE:-}
       BAN_SECONDS: ${BAN_SECONDS:-60}
       ACTION_DELAY: ${ACTION_DELAY:-3}
+      GROUP_SGID: ${GROUP_SGID:-}
+      GROUP_REMOVE: ${GROUP_REMOVE:-1}
       MOVE_CID: ${MOVE_CID:-}
       WHITELIST_UIDS: ${WHITELIST_UIDS:-}
       WHITELIST_SGIDS: ${WHITELIST_SGIDS:-}
@@ -121,6 +125,8 @@ services:
         if BAN_SECONDS <= 0:
             BAN_SECONDS = 60
         ACTION_DELAY = float(env("ACTION_DELAY", "3"))
+        GROUP_SGID = env("GROUP_SGID")
+        GROUP_REMOVE = env("GROUP_REMOVE", "1") != "0"
         MOVE_CID = env("MOVE_CID")
         WL_UIDS = set(csv("WHITELIST_UIDS"))
         WL_SGIDS = set(csv("WHITELIST_SGIDS"))
@@ -272,7 +278,7 @@ services:
                 log("%s failed: %s" % (text.split(" ")[0], msg))
 
 
-        def act(q, clid, detail):
+        def act(q, clid, detail, cldbid, groups):
             reason = ("VPN/Proxy detected: %s" % detail).strip()[:80]
             notified = False
             for action in ACTIONS:
@@ -289,6 +295,8 @@ services:
                     send(q, "clientmove clid=%s cid=%s" % (clid, MOVE_CID))
                 elif action == "kick":
                     send(q, "clientkick clid=%s reasonid=5 reasonmsg=%s" % (clid, esc(KICK_MESSAGE)))
+                elif action == "group" and GROUP_SGID and cldbid and GROUP_SGID not in groups:
+                    send(q, "servergroupaddclient sgid=%s cldbid=%s" % (GROUP_SGID, cldbid))
                 elif action == "ban":
                     send(q, "banclient clid=%s time=%s banreason=%s" % (clid, BAN_SECONDS, esc(reason)))
 
@@ -305,7 +313,9 @@ services:
             code, _, lines = q.cmd("clientinfo clid=%s" % clid)
             if code != "0" or not lines:
                 return
-            ip = parse(lines[0]).get("connection_client_ip", "")
+            info = parse(lines[0])
+            ip = info.get("connection_client_ip", "")
+            cldbid = info.get("client_database_id", "")
             if not public_ip(ip):
                 return
             try:
@@ -314,9 +324,11 @@ services:
                 log("lookup failed for %s: %s" % (nick, exc))
                 return
             if not flagged:
+                if GROUP_SGID and GROUP_REMOVE and GROUP_SGID in groups and cldbid:
+                    send(q, "servergroupdelclient sgid=%s cldbid=%s" % (GROUP_SGID, cldbid))
                 return
             log("VPN/proxy: %s (%s) %s %s" % (nick, uid, ip, detail))
-            act(q, clid, detail)
+            act(q, clid, detail, cldbid, groups)
 
 
         def handle_event(q, line):

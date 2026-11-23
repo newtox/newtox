@@ -7,7 +7,7 @@ A Compose/Portainer stack with a ServerQuery bot that checks the IP address of e
 1. The bot logs in via the SSH query port, sets its nickname and registers for server events.
 2. On every client join it reads the IP with `clientinfo` (`connection_client_ip`).
 3. The IP is checked against the selected provider. Results are cached for 6 hours.
-4. On a hit, the configured actions run: `log`, `message`, `poke`, `move`, `kick`, `ban`.
+4. On a hit, the configured actions run: `log`, `message`, `poke`, `move`, `group`, `kick`, `ban`.
 
 Private and local IPs, query clients and moved clients are ignored. Clients can be whitelisted by unique ID or by server group.
 
@@ -56,11 +56,13 @@ or grant the missing permissions to a group. The bot needs to register for serve
 | `ASN_DIR` | `/opt/ts-vpn` | host folder that contains the ASN database, mounted read-only to `/data` |
 | `ASN_KEYWORDS` | built-in list | comma separated provider name fragments that count as a hit |
 | `ASN_BLOCKLIST` | empty | comma separated ASN numbers that count as a hit |
-| `ACTION` | `log,message` | comma separated list of `log`, `message`, `poke`, `move`, `kick`, `ban` |
+| `ACTION` | `log,message` | comma separated list of `log`, `message`, `poke`, `move`, `group`, `kick`, `ban` |
 | `MESSAGE` | built-in text | text for `message` and `poke` |
 | `KICK_MESSAGE` | built-in text | reason for `kick` |
 | `BAN_SECONDS` | `60` | duration of a `ban` in seconds, values of 0 or less fall back to 60 |
 | `ACTION_DELAY` | `3` | seconds to wait between `message`/`poke` and `kick`/`ban`, so the client can read the message |
+| `GROUP_SGID` | empty | ID of the server group that the `group` action assigns |
+| `GROUP_REMOVE` | `1` | remove `GROUP_SGID` again when the client joins later without VPN, `0` keeps it |
 | `MOVE_CID` | empty | target channel ID for `move` |
 | `WHITELIST_UIDS` | empty | comma separated unique IDs that are never checked |
 | `WHITELIST_SGIDS` | empty | comma separated server group IDs that are never checked |
@@ -76,6 +78,12 @@ or grant the missing permissions to a group. The bot needs to register for serve
 3. Set `PROVIDER=asn` and, if needed, `ASN_BLOCKLIST` and `ASN_KEYWORDS`.
 
 Do not commit the database to a repository, the MaxMind license does not allow redistribution.
+
+## Group action
+
+`group` adds the client to the server group `GROUP_SGID`, for example a group called VPN. What the group does is defined by its permissions, for example restricted rights or the right to join only a waiting room channel. The group stays in the database and is applied again on every join of a flagged client. With `GROUP_REMOVE=1` the bot removes it again as soon as the client joins without VPN. Clients that already have the group are skipped. The query login needs the right to add members to that group (`i_group_member_add_power` at least as high as the group's required add power, and the same for removing).
+
+Example: `ACTION=message,group,move` with `GROUP_SGID=<VPN group ID>` and `MOVE_CID=<waiting room channel ID>`.
 
 ## Recommended start
 
