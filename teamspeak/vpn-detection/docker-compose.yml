@@ -119,8 +119,8 @@ services:
         )]
         BLOCKED_ASNS = set(csv("ASN_BLOCKLIST"))
         ACTIONS = [a.lower() for a in csv("ACTION", "log,message")]
-        MESSAGE = env("MESSAGE", "VPN/Proxy erkannt. Bitte deaktiviere es, um auf diesem Server zu bleiben.")
-        KICK_MESSAGE = env("KICK_MESSAGE", "VPN/Proxy nicht erlaubt")
+        MESSAGE = env("MESSAGE", "VPN/proxy detected. Please disable it to stay on this server.")
+        KICK_MESSAGE = env("KICK_MESSAGE", "VPN/proxy not allowed")
         BAN_SECONDS = int(env("BAN_SECONDS", "60"))
         if BAN_SECONDS <= 0:
             BAN_SECONDS = 60
