@@ -1,0 +1,90 @@
+# TeamSpeak ServerQuery keep-alive session (Portainer stack)
+#
+# Keeps a ServerQuery session logged in permanently, optionally with a custom
+# nickname and parked in a specific channel. Reconnects automatically.
+#
+# Set these environment variables in Portainer (Stack -> Environment variables):
+#   TS_PASSWORD  (required) password of the query login
+#   TS_USER      query login name               (default: serveradmin)
+#   TS_HOST      host of the query port         (default: teamspeak6-server)
+#   TS_NETWORK   Docker network of the TeamSpeak container (default: teamspeak-server_default)
+#   TS_PORT      SSH query port                 (default: 10022)
+#   TS_SID       virtual server ID              (default: 1)
+#   TS_NICK      nickname shown in the tree     (default: Query)
+#   TS_CID       channel ID to park in          (default: empty = stay in default channel)
+#   KEEPALIVE    seconds between keep-alives    (default: 60, must stay below the query idle timeout)
+
+services:
+  ts-query:
+    image: alpine:3.20
+    container_name: ts-query
+    restart: unless-stopped
+    networks:
+      - teamspeak
+    environment:
+      TS_HOST: ${TS_HOST:-teamspeak6-server}
+      TS_PORT: ${TS_PORT:-10022}
+      TS_USER: ${TS_USER:-serveradmin}
+      SSHPASS: ${TS_PASSWORD:?TS_PASSWORD must be set}
+      TS_SID: ${TS_SID:-1}
+      TS_NICK: ${TS_NICK:-Query}
+      TS_CID: ${TS_CID:-}
+      KEEPALIVE: ${KEEPALIVE:-60}
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "2"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        apk add --no-cache openssh-client sshpass >/dev/null
+
+        NICK=$$(printf '%s' "$$TS_NICK" | sed 's/ /\\s/g')
+
+        while true; do
+          echo "[$$(date '+%F %T')] connecting to $$TS_HOST:$$TS_PORT as $$TS_USER"
+          rm -f /tmp/clid
+
+          {
+            echo "use sid=$$TS_SID"
+            echo "clientupdate client_nickname=$$NICK"
+            echo "whoami"
+
+            i=0
+            while [ ! -s /tmp/clid ] && [ $$i -lt 20 ]; do sleep 1; i=$$((i+1)); done
+
+            if [ -n "$$TS_CID" ] && [ -s /tmp/clid ]; then
+              echo "clientmove clid=$$(cat /tmp/clid) cid=$$TS_CID"
+            fi
+
+            while true; do
+              sleep "$$KEEPALIVE"
+              echo "whoami"
+            done
+          } | sshpass -e ssh -T \
+                -o StrictHostKeyChecking=no \
+                -o UserKnownHostsFile=/dev/null \
+                -o LogLevel=ERROR \
+                -p "$$TS_PORT" "$$TS_USER@$$TS_HOST" 2>&1 \
+            | tr -d '\r' | while IFS= read -r line; do
+                case "$$line" in
+                  *client_id=*)
+                    printf '%s\n' "$$line" | sed -n 's/.*client_id=\([0-9]*\).*/\1/p' > /tmp/clid
+                    ;;
+                  "error id=0 msg=ok"|"")
+                    ;;
+                  *)
+                    echo "$$line"
+                    ;;
+                esac
+              done
+
+          echo "[$$(date '+%F %T')] disconnected, reconnecting in 60s"
+          sleep 60
+        done
+
+networks:
+  teamspeak:
+    name: ${TS_NETWORK:-teamspeak-server_default}
+    external: true

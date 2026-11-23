@@ -1,0 +1,362 @@
+# TeamSpeak VPN detection bot (Portainer stack)
+#
+# Logs in via ServerQuery, watches client joins and reacts when the IP of a
+# connecting client belongs to a VPN or proxy. The bot script is embedded below,
+# so this file can be pasted into Portainer as it is. Reconnects automatically.
+#
+# Set these environment variables in Portainer (Stack -> Environment variables):
+#   TS_PASSWORD      (required) password of the query login
+#   TS_USER          query login name                (default: serveradmin)
+#   TS_HOST          host of the query port          (default: teamspeak6-server)
+#   TS_NETWORK       Docker network of the TeamSpeak container (default: teamspeak-server_default)
+#   TS_PORT          SSH query port                  (default: 10022)
+#   TS_SID           virtual server ID               (default: 1)
+#   TS_NICK          nickname of the bot             (default: VPN-Detection)
+#   TS_CID           channel ID to park the bot in   (default: empty = default channel)
+#   KEEPALIVE        seconds between keep-alives     (default: 60)
+#   PROVIDER         proxycheck or asn               (default: proxycheck)
+#   PROXYCHECK_KEY   proxycheck.io API key           (default: empty = free quota)
+#   ASN_DB           path of the GeoLite2 ASN file   (default: /data/GeoLite2-ASN.mmdb)
+#   ASN_DIR          host folder with the ASN file, mounted read-only to /data (default: /opt/ts-vpn)
+#   ASN_KEYWORDS     provider name fragments, comma separated (default: built-in list)
+#   ASN_BLOCKLIST    ASN numbers, comma separated    (default: empty)
+#   ACTION           log, message, poke, move, kick  (default: log,message)
+#   MESSAGE          text for message and poke       (default: built-in text)
+#   KICK_MESSAGE     reason for kick                 (default: built-in text)
+#   MOVE_CID         target channel ID for move      (default: empty)
+#   WHITELIST_UIDS   unique IDs that are never checked, comma separated
+#   WHITELIST_SGIDS  server group IDs that are never checked, comma separated
+
+services:
+  ts-vpn-detection:
+    image: python:3.12-slim
+    container_name: ts-vpn-detection
+    restart: unless-stopped
+    networks:
+      - teamspeak
+    volumes:
+      - ${ASN_DIR:-/opt/ts-vpn}:/data:ro
+    environment:
+      PYTHONUNBUFFERED: "1"
+      TS_HOST: ${TS_HOST:-teamspeak6-server}
+      TS_PORT: ${TS_PORT:-10022}
+      TS_USER: ${TS_USER:-serveradmin}
+      TS_PASSWORD: ${TS_PASSWORD:?TS_PASSWORD must be set}
+      TS_SID: ${TS_SID:-1}
+      TS_NICK: ${TS_NICK:-VPN-Detection}
+      TS_CID: ${TS_CID:-}
+      KEEPALIVE: ${KEEPALIVE:-60}
+      PROVIDER: ${PROVIDER:-proxycheck}
+      PROXYCHECK_KEY: ${PROXYCHECK_KEY:-}
+      ASN_DB: ${ASN_DB:-/data/GeoLite2-ASN.mmdb}
+      ASN_KEYWORDS: ${ASN_KEYWORDS:-}
+      ASN_BLOCKLIST: ${ASN_BLOCKLIST:-}
+      ACTION: ${ACTION:-log,message}
+      MESSAGE: ${MESSAGE:-}
+      KICK_MESSAGE: ${KICK_MESSAGE:-}
+      MOVE_CID: ${MOVE_CID:-}
+      WHITELIST_UIDS: ${WHITELIST_UIDS:-}
+      WHITELIST_SGIDS: ${WHITELIST_SGIDS:-}
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "2"
+    command:
+      - sh
+      - -c
+      - |
+        pip install --no-cache-dir -q paramiko maxminddb >/dev/null 2>&1
+        cat > /tmp/vpn_detection.py <<'PYEOF'
+        import collections
+        import ipaddress
+        import json
+        import os
+        import socket
+        import sys
+        import time
+        import urllib.parse
+        import urllib.request
+
+        import paramiko
+
+
+        def env(name, default=""):
+            return os.environ.get(name) or default
+
+
+        def log(text):
+            print(time.strftime("[%F %T] ") + text, flush=True)
+
+
+        def csv(name, default=""):
+            return [x.strip() for x in env(name, default).split(",") if x.strip()]
+
+
+        HOST = env("TS_HOST", "teamspeak6-server")
+        PORT = int(env("TS_PORT", "10022"))
+        USER = env("TS_USER", "serveradmin")
+        PASSWORD = env("TS_PASSWORD")
+        SID = env("TS_SID", "1")
+        NICK = env("TS_NICK", "VPN-Detection")
+        PARK_CID = env("TS_CID")
+        KEEPALIVE = int(env("KEEPALIVE", "60"))
+        PROVIDER = env("PROVIDER", "proxycheck").lower()
+        PROXYCHECK_KEY = env("PROXYCHECK_KEY")
+        ASN_DB = env("ASN_DB", "/app/GeoLite2-ASN.mmdb")
+        KEYWORDS = [k.lower() for k in csv(
+            "ASN_KEYWORDS",
+            "vpn,proxy,m247,datacamp,mullvad,nordvpn,expressvpn,proton,packethub,"
+            "leaseweb,ovh,hetzner,digitalocean,vultr,linode,amazon,google cloud,microsoft",
+        )]
+        BLOCKED_ASNS = set(csv("ASN_BLOCKLIST"))
+        ACTIONS = [a.lower() for a in csv("ACTION", "log,message")]
+        MESSAGE = env("MESSAGE", "VPN/Proxy erkannt. Bitte deaktiviere es, um auf diesem Server zu bleiben.")
+        KICK_MESSAGE = env("KICK_MESSAGE", "VPN/Proxy nicht erlaubt")
+        MOVE_CID = env("MOVE_CID")
+        WL_UIDS = set(csv("WHITELIST_UIDS"))
+        WL_SGIDS = set(csv("WHITELIST_SGIDS"))
+        CACHE_TTL = 6 * 3600
+
+        CACHE = {}
+        READER = None
+
+        ESCAPES = {"s": " ", "p": "|", "/": "/", "\\": "\\", "a": "\a", "b": "\b",
+                   "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v"}
+
+
+        def unesc(value):
+            out = []
+            i = 0
+            while i < len(value):
+                c = value[i]
+                if c == "\\" and i + 1 < len(value):
+                    out.append(ESCAPES.get(value[i + 1], value[i + 1]))
+                    i += 2
+                else:
+                    out.append(c)
+                    i += 1
+            return "".join(out)
+
+
+        def esc(value):
+            return (value.replace("\\", "\\\\").replace("/", "\\/").replace(" ", "\\s")
+                    .replace("|", "\\p").replace("\n", "\\n"))
+
+
+        def parse(line):
+            result = {}
+            for part in line.split(" "):
+                if "=" in part:
+                    key, value = part.split("=", 1)
+                    result[key] = unesc(value)
+                elif part:
+                    result[part] = ""
+            return result
+
+
+        class Query:
+            def __init__(self):
+                self.client = None
+                self.chan = None
+                self.buf = ""
+                self.pending = collections.deque()
+
+            def open(self):
+                self.client = paramiko.SSHClient()
+                self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                self.client.connect(HOST, port=PORT, username=USER, password=PASSWORD,
+                                    look_for_keys=False, allow_agent=False,
+                                    timeout=15, banner_timeout=15, auth_timeout=15)
+                self.chan = self.client.get_transport().open_session()
+                self.chan.invoke_shell()
+                self.chan.settimeout(1.0)
+                while self.read_line(2) is not None:
+                    pass
+
+            def close(self):
+                try:
+                    if self.client:
+                        self.client.close()
+                except Exception:
+                    pass
+
+            def read_line(self, timeout):
+                deadline = time.time() + timeout
+                while True:
+                    if "\n" in self.buf:
+                        line, self.buf = self.buf.split("\n", 1)
+                        return line.strip("\r ")
+                    if time.time() >= deadline:
+                        return None
+                    try:
+                        data = self.chan.recv(4096)
+                    except socket.timeout:
+                        continue
+                    if not data:
+                        raise ConnectionError("connection closed")
+                    self.buf += data.decode("utf-8", "replace")
+
+            def cmd(self, text):
+                self.chan.send(text + "\n")
+                lines = []
+                while True:
+                    line = self.read_line(15)
+                    if line is None:
+                        raise TimeoutError("no answer to: " + text.split(" ")[0])
+                    if line.startswith("notify"):
+                        self.pending.append(line)
+                        continue
+                    if line.startswith("error "):
+                        fields = parse(line[6:])
+                        return fields.get("id", "-1"), fields.get("msg", ""), lines
+                    if line:
+                        lines.append(line)
+
+
+        def public_ip(value):
+            try:
+                return ipaddress.ip_address(value).is_global
+            except ValueError:
+                return False
+
+
+        def check_proxycheck(ip):
+            params = {"vpn": "1", "asn": "1"}
+            if PROXYCHECK_KEY:
+                params["key"] = PROXYCHECK_KEY
+            url = "https://proxycheck.io/v2/%s?%s" % (ip, urllib.parse.urlencode(params))
+            request = urllib.request.Request(url, headers={"User-Agent": "ts-vpn-detection"})
+            with urllib.request.urlopen(request, timeout=8) as response:
+                data = json.load(response)
+            if data.get("status") not in ("ok", "warning"):
+                raise RuntimeError(data.get("message", "api error"))
+            info = data.get(ip, {})
+            detail = info.get("type") or info.get("provider") or ""
+            return info.get("proxy") == "yes", detail
+
+
+        def check_asn(ip):
+            record = READER.get(ip) or {}
+            org = record.get("autonomous_system_organization", "")
+            number = str(record.get("autonomous_system_number", ""))
+            low = org.lower()
+            flagged = number in BLOCKED_ASNS or any(k in low for k in KEYWORDS)
+            return flagged, "AS%s %s" % (number, org)
+
+
+        def check_ip(ip):
+            now = time.time()
+            hit = CACHE.get(ip)
+            if hit and now - hit[0] < CACHE_TTL:
+                return hit[1], hit[2]
+            if PROVIDER == "asn":
+                flagged, detail = check_asn(ip)
+            else:
+                flagged, detail = check_proxycheck(ip)
+            CACHE[ip] = (now, flagged, detail)
+            return flagged, detail
+
+
+        def act(q, clid):
+            for action in ACTIONS:
+                if action == "message":
+                    q.cmd("sendtextmessage targetmode=1 target=%s msg=%s" % (clid, esc(MESSAGE)))
+                elif action == "poke":
+                    q.cmd("clientpoke clid=%s msg=%s" % (clid, esc(MESSAGE)))
+                elif action == "move" and MOVE_CID:
+                    q.cmd("clientmove clid=%s cid=%s" % (clid, MOVE_CID))
+                elif action == "kick":
+                    q.cmd("clientkick clid=%s reasonid=5 reasonmsg=%s" % (clid, esc(KICK_MESSAGE)))
+
+
+        def handle_join(q, record):
+            if record.get("reasonid", "0") != "0" or record.get("client_type", "0") != "0":
+                return
+            clid = record.get("clid")
+            uid = record.get("client_unique_identifier", "")
+            nick = record.get("client_nickname", "?")
+            groups = set(record.get("client_servergroups", "").split(","))
+            if not clid or uid in WL_UIDS or groups & WL_SGIDS:
+                return
+            code, _, lines = q.cmd("clientinfo clid=%s" % clid)
+            if code != "0" or not lines:
+                return
+            ip = parse(lines[0]).get("connection_client_ip", "")
+            if not public_ip(ip):
+                return
+            try:
+                flagged, detail = check_ip(ip)
+            except Exception as exc:
+                log("lookup failed for %s: %s" % (nick, exc))
+                return
+            if not flagged:
+                return
+            log("VPN/proxy: %s (%s) %s %s" % (nick, uid, ip, detail))
+            act(q, clid)
+
+
+        def handle_event(q, line):
+            if not line.startswith("notifycliententerview"):
+                return
+            for part in line.split("|"):
+                handle_join(q, parse(part))
+
+
+        def run():
+            q = Query()
+            try:
+                q.open()
+                code, msg, _ = q.cmd("use sid=%s" % SID)
+                if code != "0":
+                    raise RuntimeError("use failed: " + msg)
+                q.cmd("clientupdate client_nickname=%s" % esc(NICK))
+                code, msg, _ = q.cmd("servernotifyregister event=server")
+                if code != "0":
+                    raise RuntimeError("register failed: " + msg)
+                _, _, lines = q.cmd("whoami")
+                me = parse(lines[0]).get("client_id") if lines else None
+                if PARK_CID and me:
+                    q.cmd("clientmove clid=%s cid=%s" % (me, PARK_CID))
+                log("connected, provider=%s, actions=%s" % (PROVIDER, ",".join(ACTIONS)))
+                last = time.time()
+                while True:
+                    if q.pending:
+                        line = q.pending.popleft()
+                    else:
+                        line = q.read_line(1)
+                        if line is None:
+                            if time.time() - last >= KEEPALIVE:
+                                q.cmd("whoami")
+                                last = time.time()
+                            continue
+                    handle_event(q, line)
+            finally:
+                q.close()
+
+
+        def main():
+            global READER
+            if not PASSWORD:
+                log("TS_PASSWORD is not set")
+                sys.exit(1)
+            if PROVIDER == "asn":
+                import maxminddb
+                READER = maxminddb.open_database(ASN_DB)
+            while True:
+                try:
+                    run()
+                except Exception as exc:
+                    log("session ended: %s" % exc)
+                time.sleep(30)
+
+
+        if __name__ == "__main__":
+            main()
+        PYEOF
+        exec python /tmp/vpn_detection.py
+
+networks:
+  teamspeak:
+    name: ${TS_NETWORK:-teamspeak-server_default}
+    external: true
