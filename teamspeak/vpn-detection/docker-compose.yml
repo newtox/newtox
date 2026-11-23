@@ -20,9 +20,11 @@
 #   ASN_DIR          host folder with the ASN file, mounted read-only to /data (default: /opt/ts-vpn)
 #   ASN_KEYWORDS     provider name fragments, comma separated (default: built-in list)
 #   ASN_BLOCKLIST    ASN numbers, comma separated    (default: empty)
-#   ACTION           log, message, poke, move, kick  (default: log,message)
+#   ACTION           log, message, poke, move, kick, ban  (default: log,message)
 #   MESSAGE          text for message and poke       (default: built-in text)
 #   KICK_MESSAGE     reason for kick                 (default: built-in text)
+#   BAN_SECONDS      duration of a ban in seconds    (default: 60)
+#   ACTION_DELAY     seconds between message/poke and kick/ban (default: 3)
 #   MOVE_CID         target channel ID for move      (default: empty)
 #   WHITELIST_UIDS   unique IDs that are never checked, comma separated
 #   WHITELIST_SGIDS  server group IDs that are never checked, comma separated
@@ -54,6 +56,8 @@ services:
       ACTION: ${ACTION:-log,message}
       MESSAGE: ${MESSAGE:-}
       KICK_MESSAGE: ${KICK_MESSAGE:-}
+      BAN_SECONDS: ${BAN_SECONDS:-60}
+      ACTION_DELAY: ${ACTION_DELAY:-3}
       MOVE_CID: ${MOVE_CID:-}
       WHITELIST_UIDS: ${WHITELIST_UIDS:-}
       WHITELIST_SGIDS: ${WHITELIST_SGIDS:-}
@@ -113,6 +117,10 @@ services:
         ACTIONS = [a.lower() for a in csv("ACTION", "log,message")]
         MESSAGE = env("MESSAGE", "VPN/Proxy erkannt. Bitte deaktiviere es, um auf diesem Server zu bleiben.")
         KICK_MESSAGE = env("KICK_MESSAGE", "VPN/Proxy nicht erlaubt")
+        BAN_SECONDS = int(env("BAN_SECONDS", "60"))
+        if BAN_SECONDS <= 0:
+            BAN_SECONDS = 60
+        ACTION_DELAY = float(env("ACTION_DELAY", "3"))
         MOVE_CID = env("MOVE_CID")
         WL_UIDS = set(csv("WHITELIST_UIDS"))
         WL_SGIDS = set(csv("WHITELIST_SGIDS"))
@@ -258,16 +266,31 @@ services:
             return flagged, detail
 
 
-        def act(q, clid):
+        def send(q, text):
+            code, msg, _ = q.cmd(text)
+            if code != "0":
+                log("%s failed: %s" % (text.split(" ")[0], msg))
+
+
+        def act(q, clid, detail):
+            reason = ("VPN/Proxy detected: %s" % detail).strip()[:80]
+            notified = False
             for action in ACTIONS:
+                if action in ("kick", "ban") and notified and ACTION_DELAY > 0:
+                    time.sleep(ACTION_DELAY)
+                    notified = False
                 if action == "message":
-                    q.cmd("sendtextmessage targetmode=1 target=%s msg=%s" % (clid, esc(MESSAGE)))
+                    send(q, "sendtextmessage targetmode=1 target=%s msg=%s" % (clid, esc(MESSAGE)))
+                    notified = True
                 elif action == "poke":
-                    q.cmd("clientpoke clid=%s msg=%s" % (clid, esc(MESSAGE)))
+                    send(q, "clientpoke clid=%s msg=%s" % (clid, esc(MESSAGE)))
+                    notified = True
                 elif action == "move" and MOVE_CID:
-                    q.cmd("clientmove clid=%s cid=%s" % (clid, MOVE_CID))
+                    send(q, "clientmove clid=%s cid=%s" % (clid, MOVE_CID))
                 elif action == "kick":
-                    q.cmd("clientkick clid=%s reasonid=5 reasonmsg=%s" % (clid, esc(KICK_MESSAGE)))
+                    send(q, "clientkick clid=%s reasonid=5 reasonmsg=%s" % (clid, esc(KICK_MESSAGE)))
+                elif action == "ban":
+                    send(q, "banclient clid=%s time=%s banreason=%s" % (clid, BAN_SECONDS, esc(reason)))
 
 
         def handle_join(q, record):
@@ -293,7 +316,7 @@ services:
             if not flagged:
                 return
             log("VPN/proxy: %s (%s) %s %s" % (nick, uid, ip, detail))
-            act(q, clid)
+            act(q, clid, detail)
 
 
         def handle_event(q, line):

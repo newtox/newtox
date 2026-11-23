@@ -7,7 +7,7 @@ A Compose/Portainer stack with a ServerQuery bot that checks the IP address of e
 1. The bot logs in via the SSH query port, sets its nickname and registers for server events.
 2. On every client join it reads the IP with `clientinfo` (`connection_client_ip`).
 3. The IP is checked against the selected provider. Results are cached for 6 hours.
-4. On a hit, the configured actions run: `log`, `message`, `poke`, `move`, `kick`.
+4. On a hit, the configured actions run: `log`, `message`, `poke`, `move`, `kick`, `ban`.
 
 Private and local IPs, query clients and moved clients are ignored. Clients can be whitelisted by unique ID or by server group.
 
@@ -56,9 +56,11 @@ or grant the missing permissions to a group. The bot needs to register for serve
 | `ASN_DIR` | `/opt/ts-vpn` | host folder that contains the ASN database, mounted read-only to `/data` |
 | `ASN_KEYWORDS` | built-in list | comma separated provider name fragments that count as a hit |
 | `ASN_BLOCKLIST` | empty | comma separated ASN numbers that count as a hit |
-| `ACTION` | `log,message` | comma separated list of `log`, `message`, `poke`, `move`, `kick` |
+| `ACTION` | `log,message` | comma separated list of `log`, `message`, `poke`, `move`, `kick`, `ban` |
 | `MESSAGE` | built-in text | text for `message` and `poke` |
 | `KICK_MESSAGE` | built-in text | reason for `kick` |
+| `BAN_SECONDS` | `60` | duration of a `ban` in seconds, values of 0 or less fall back to 60 |
+| `ACTION_DELAY` | `3` | seconds to wait between `message`/`poke` and `kick`/`ban`, so the client can read the message |
 | `MOVE_CID` | empty | target channel ID for `move` |
 | `WHITELIST_UIDS` | empty | comma separated unique IDs that are never checked |
 | `WHITELIST_SGIDS` | empty | comma separated server group IDs that are never checked |
@@ -77,7 +79,9 @@ Do not commit the database to a repository, the MaxMind license does not allow r
 
 ## Recommended start
 
-Begin with `ACTION=log,message` and watch the logs for a few days. Mobile and company networks are sometimes classified as VPN. Whitelist your bots and trusted users (`WHITELIST_SGIDS`, `WHITELIST_UIDS`) before enabling `move` or `kick`.
+Begin with `ACTION=log,message` and watch the logs for a few days. Mobile and company networks are sometimes classified as VPN. Whitelist your bots and trusted users (`WHITELIST_SGIDS`, `WHITELIST_UIDS`) before enabling `move`, `kick` or `ban`.
+
+A ban is a short temporary ban of the client's IP and unique ID, with the provider or ASN as reason. For example `ACTION=poke,ban` pokes the client with `MESSAGE` and bans it for `BAN_SECONDS` after `ACTION_DELAY` seconds. The query login needs the permission to ban clients, otherwise the log shows `banclient failed: insufficient client permissions`.
 
 ## Deploy
 
