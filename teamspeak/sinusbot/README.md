@@ -29,6 +29,8 @@ Each entry in the web interface is one group people may join:
 
 Groups that are not in the list can't be touched through the bot, whatever someone types.
 
+Give every group in the list the basic permissions of your default server group (usually Guest). TeamSpeak only gives a client the default group while the client is in no other server group, so a guest who joins a group without them suddenly can't join channels or talk. The easiest way is to create the group as a copy of the default group via ServerQuery (`servergroupcopy ssgid=<default group> tsgid=0 name=<name> type=1`). SinusBot scripts can't create groups, the [query bot](../self-groups) can do it with `!creategroup`.
+
 ### TeamSpeak permissions
 
 The bot's server group needs:

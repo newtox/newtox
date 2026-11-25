@@ -14,6 +14,21 @@ The bot is a query client, so it shows up without microphone or speaker and does
 
 `<name>` is the group name in lower case, or the keyword set in `GROUP_KEYWORDS`.
 
+Members of `ADMIN_GROUPS` also get:
+
+| English | German | |
+|---|---|---|
+| `!creategroup <name>` | `!gruppeanlegen <name>` | creates a group people can join right away |
+| `!deletegroup <name>` | `!gruppeloeschen <name>` | deletes a group that was created with `!creategroup` |
+
+## Creating groups
+
+TeamSpeak only gives a client the default server group (usually Guest) while the client is in no other server group. When a guest joins a group without the basic permissions, they suddenly can't join channels or talk any more. `!creategroup` avoids that: the new group starts as a copy of the default server group, so it has all of its permissions, and its needed member add/remove power is set to `NEW_GROUP_POWER`. Add icons or extra permissions afterwards as usual.
+
+The bot finds the default group itself (`serverinfo`) and copies it with `servergroupcopy`. If the server doesn't know that command, it creates the group and copies the permissions one by one.
+
+Created groups are remembered in `groups.json` in `DATA_DIR` and can be joined without touching `SELF_GROUPS`. `!deletegroup` only deletes groups from that file, so groups made by hand can't be deleted through the bot. If the file gets lost, the groups stay in TeamSpeak but can't be joined through the bot any more until you add them to `SELF_GROUPS`.
+
 ## How it works
 
 1. The bot logs in via the SSH query port, sets its nickname, moves into `TS_CID` and registers for private messages and the chat of that channel.
@@ -60,12 +75,24 @@ The group needs:
 | `b_serverquery_login`, `b_virtualserver_select` | log in and select the server, needed when the login isn't in Guest Server Query anymore |
 | `b_channel_join_permanent`, `i_channel_join_power` | move into `TS_CID` |
 
+For `!creategroup` and `!deletegroup` it additionally needs:
+
+| Permission | Why |
+|---|---|
+| `b_virtualserver_info_view` | find the default group |
+| `b_virtualserver_servergroup_create`, `b_virtualserver_servergroup_delete` | create and delete groups |
+| `b_virtualserver_servergroup_permission_list` | read the default group's permissions |
+| `i_group_modify_power` | at least the `i_group_needed_modify_power` of the default group |
+| `i_permission_modify_power` | high enough to set the copied permissions |
+
+That is a lot of power, often as much as your server admins have. The bot only ever changes groups it created itself, and only members of `ADMIN_GROUPS` can trigger it. If you don't need it, leave `ADMIN_GROUPS` empty and skip these permissions.
+
 ## Variables
 
 | Variable | Default | Description |
 |---|---|---|
 | `TS_PASSWORD` | required | password of the query login |
-| `SELF_GROUPS` | required | server group IDs people may join, comma separated |
+| `SELF_GROUPS` | empty | existing server group IDs people may join, comma separated |
 | `TS_USER` | `serveradmin` | query login name |
 | `TS_HOST` | `teamspeak6-server` | host of the query port (container name) |
 | `TS_NETWORK` | `teamspeak-server_default` | Docker network of the TeamSpeak container |
@@ -79,10 +106,13 @@ The group needs:
 | `GROUP_KEYWORDS` | group name in lower case | command names, e.g. `12=cs2,14=modcs` |
 | `GROUP_DESCRIPTIONS` | empty | descriptions shown in the list, separated by `;` so they can contain commas, e.g. `12=Counter-Strike;13=Palworld, Koop` |
 | `GROUP_REQUIRED` | everyone may join | groups needed to join, `+` between several, e.g. `14=10+11` |
+| `ADMIN_GROUPS` | nobody | server group IDs allowed to use `!creategroup` and `!deletegroup`, comma separated |
+| `NEW_GROUP_POWER` | `30` | needed member add/remove power of created groups, at most the bot's own add/remove power |
+| `DATA_DIR` | `/opt/ts-self-groups` | host folder where created groups are remembered |
 
 ## Deploy
 
-In Portainer: Stacks, Add stack, paste `docker-compose.yml`, set the variables under Environment variables (at least `TS_PASSWORD`, `TS_USER` and `SELF_GROUPS`), then Deploy the stack. Check the result with:
+In Portainer: Stacks, Add stack, paste `docker-compose.yml`, set the variables under Environment variables (at least `TS_PASSWORD`, `TS_USER` and `SELF_GROUPS` or `ADMIN_GROUPS`), then Deploy the stack. Check the result with:
 
 ```bash
 docker logs --tail 20 ts-self-groups

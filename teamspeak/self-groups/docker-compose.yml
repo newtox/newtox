@@ -8,7 +8,7 @@
 #
 # Set these environment variables in Portainer (Stack -> Environment variables):
 #   TS_PASSWORD         (required) password of the query login
-#   SELF_GROUPS         (required) server group IDs people may join, comma separated
+#   SELF_GROUPS         server group IDs people may join, comma separated
 #   TS_USER             query login name                (default: serveradmin)
 #   TS_HOST             host of the query port          (default: teamspeak6-server)
 #   TS_NETWORK          Docker network of the TeamSpeak container (default: teamspeak-server_default)
@@ -22,6 +22,9 @@
 #   GROUP_KEYWORDS      command names, e.g. 12=cs2,14=modcs (default: group name in lower case)
 #   GROUP_DESCRIPTIONS  descriptions, separated by ;    e.g. 12=Counter-Strike;13=Palworld, Koop
 #   GROUP_REQUIRED      groups needed to join, e.g. 14=10+11 (default: everyone may join)
+#   ADMIN_GROUPS        server group IDs allowed to use !creategroup and !deletegroup (default: nobody)
+#   NEW_GROUP_POWER     needed member add/remove power of created groups (default: 30)
+#   DATA_DIR            host folder where created groups are remembered (default: /opt/ts-self-groups)
 
 services:
   ts-self-groups:
@@ -30,6 +33,8 @@ services:
     restart: unless-stopped
     networks:
       - teamspeak
+    volumes:
+      - ${DATA_DIR:-/opt/ts-self-groups}:/data
     environment:
       PYTHONUNBUFFERED: "1"
       TS_HOST: ${TS_HOST:-teamspeak6-server}
@@ -46,6 +51,9 @@ services:
       GROUP_KEYWORDS: ${GROUP_KEYWORDS:-}
       GROUP_DESCRIPTIONS: ${GROUP_DESCRIPTIONS:-}
       GROUP_REQUIRED: ${GROUP_REQUIRED:-}
+      ADMIN_GROUPS: ${ADMIN_GROUPS:-}
+      NEW_GROUP_POWER: ${NEW_GROUP_POWER:-30}
+      DATA_FILE: /data/groups.json
     logging:
       driver: json-file
       options:
@@ -58,6 +66,7 @@ services:
         pip install --no-cache-dir -q paramiko >/dev/null 2>&1
         cat > /tmp/self_groups.py <<'PYEOF'
         import collections
+        import json
         import os
         import socket
         import sys
@@ -101,12 +110,17 @@ services:
         KEYWORDS = {k: v.lower() for k, v in mapping("GROUP_KEYWORDS").items()}
         DESCRIPTIONS = mapping("GROUP_DESCRIPTIONS", ";")
         REQUIRED = {k: set(csv(v, "+")) for k, v in mapping("GROUP_REQUIRED").items()}
+        ADMIN_GROUPS = set(csv(env("ADMIN_GROUPS")))
+        NEW_GROUP_POWER = env("NEW_GROUP_POWER", "30")
+        DATA_FILE = env("DATA_FILE", "/data/groups.json")
         COOLDOWN = 2.0
         NAMES_TTL = 60
 
         COMMANDS = {
             "groups": ("groups", "en"), "group": ("group", "en"), "help": ("help", "en"),
+            "creategroup": ("create", "en"), "deletegroup": ("delete", "en"),
             "gruppen": ("groups", "de"), "gruppe": ("group", "de"), "hilfe": ("help", "de"),
+            "gruppeanlegen": ("create", "de"), "gruppeloeschen": ("delete", "de"), "gruppelöschen": ("delete", "de"),
         }
 
         TEXT = {
@@ -122,6 +136,14 @@ services:
                 "help": "[b]{p}groups[/b] – shows all groups you can join yourself\n"
                         "[b]{p}group <name>[/b] – adds you or takes you out again\n"
                         "Auf Deutsch: [b]{p}gruppen[/b], [b]{p}gruppe <name>[/b]",
+                "admin_help": "[b]{p}creategroup <name>[/b] – creates a group people can join\n"
+                              "[b]{p}deletegroup <name>[/b] – deletes a group created with {p}creategroup",
+                "no_admin": "Only admins can do that.",
+                "no_name": "Please give the group a name: [b]{p}creategroup <name>[/b]",
+                "exists": "There already is a group called \"{k}\".",
+                "created": "Created [b]{n}[/b]. People can join it with [b]{p}group {k}[/b].",
+                "not_created": "[b]{n}[/b] wasn't created with {p}creategroup, so it can't be deleted here.",
+                "deleted": "Deleted [b]{n}[/b].",
             },
             "de": {
                 "none": "Es gibt gerade keine Gruppen, denen du beitreten kannst.",
@@ -135,6 +157,14 @@ services:
                 "help": "[b]{p}gruppen[/b] – zeigt alle Gruppen, denen du selbst beitreten kannst\n"
                         "[b]{p}gruppe <name>[/b] – trägt dich ein oder wieder aus\n"
                         "In English: [b]{p}groups[/b], [b]{p}group <name>[/b]",
+                "admin_help": "[b]{p}gruppeanlegen <name>[/b] – legt eine Gruppe an, der man beitreten kann\n"
+                              "[b]{p}gruppeloeschen <name>[/b] – löscht eine mit {p}gruppeanlegen erstellte Gruppe",
+                "no_admin": "Das dürfen nur Admins.",
+                "no_name": "Gib der Gruppe einen Namen: [b]{p}gruppeanlegen <name>[/b]",
+                "exists": "Es gibt schon eine Gruppe „{k}“.",
+                "created": "[b]{n}[/b] ist angelegt. Beitreten geht mit [b]{p}gruppe {k}[/b].",
+                "not_created": "[b]{n}[/b] wurde nicht mit {p}gruppeanlegen erstellt und kann hier nicht gelöscht werden.",
+                "deleted": "[b]{n}[/b] ist gelöscht.",
             },
         }
 
@@ -231,6 +261,24 @@ services:
                         lines.append(line)
 
 
+        def load_created():
+            try:
+                with open(DATA_FILE) as f:
+                    return [str(x) for x in json.load(f)]
+            except FileNotFoundError:
+                return []
+            except Exception as exc:
+                log("could not read %s: %s" % (DATA_FILE, exc))
+                return []
+
+
+        def save_created(groups):
+            tmp = DATA_FILE + ".tmp"
+            with open(tmp, "w") as f:
+                json.dump(groups, f)
+            os.replace(tmp, DATA_FILE)
+
+
         class Bot:
             def __init__(self, q, me):
                 self.q = q
@@ -238,6 +286,10 @@ services:
                 self.names = {}
                 self.names_at = 0
                 self.last_use = {}
+                self.created = load_created()
+
+            def all_groups(self):
+                return SELF_GROUPS + [s for s in self.created if s not in SELF_GROUPS]
 
             def group_names(self):
                 if time.time() - self.names_at < NAMES_TTL:
@@ -269,7 +321,7 @@ services:
                     log("sendtextmessage failed: %s" % msg)
 
             def list_groups(self, clid, groups, t):
-                visible = [s for s in SELF_GROUPS if self.may_join(s, groups) or s in groups]
+                visible = [s for s in self.all_groups() if self.may_join(s, groups) or s in groups]
                 if not visible:
                     self.reply(clid, t["none"])
                     return
@@ -282,7 +334,7 @@ services:
                 self.reply(clid, "\n".join(lines))
 
             def toggle(self, clid, cldbid, nick, groups, keyword, t):
-                sgid = next((s for s in SELF_GROUPS if self.keyword_of(s) == keyword), None)
+                sgid = next((s for s in self.all_groups() if self.keyword_of(s) == keyword), None)
                 if sgid is None:
                     self.reply(clid, t["unknown"].format(k=keyword, p=PREFIX))
                     return
@@ -305,6 +357,81 @@ services:
                 log("%s %s %s (%s)" % (nick, action, name, sgid))
                 self.reply(clid, t[done].format(n=name))
 
+            def default_group(self):
+                code, msg, lines = self.q.cmd("serverinfo")
+                if code != "0" or not lines:
+                    raise RuntimeError("serverinfo failed: " + msg)
+                return parse(lines[0]).get("virtualserver_default_server_group", "")
+
+            def copy_group(self, source, name):
+                code, msg, lines = self.q.cmd("servergroupcopy ssgid=%s tsgid=0 name=%s type=1" % (source, esc(name)))
+                if code == "0" and lines:
+                    return parse(lines[0]).get("sgid")
+                log("servergroupcopy failed (%s), copying permissions one by one" % msg)
+                code, msg, lines = self.q.cmd("servergroupadd name=%s type=1" % esc(name))
+                if code != "0" or not lines:
+                    raise RuntimeError("servergroupadd failed: " + msg)
+                sgid = parse(lines[0]).get("sgid")
+                code, msg, lines = self.q.cmd("servergrouppermlist sgid=%s -permsid" % source)
+                if code != "0":
+                    raise RuntimeError("servergrouppermlist failed: " + msg)
+                perms = [parse(p) for p in lines[0].split("|")] if lines else []
+                entries = ["permsid=%s permvalue=%s permnegated=%s permskip=%s" % (
+                    p.get("permsid"), p.get("permvalue", "0"), p.get("permnegated", "0"), p.get("permskip", "0"))
+                    for p in perms if p.get("permsid")]
+                for i in range(0, len(entries), 50):
+                    code, msg, _ = self.q.cmd("servergroupaddperm sgid=%s %s" % (sgid, "|".join(entries[i:i + 50])))
+                    if code != "0":
+                        log("copying permissions to %s failed: %s" % (sgid, msg))
+                return sgid
+
+            def create(self, clid, nick, name, t):
+                if not name:
+                    self.reply(clid, t["no_name"].format(p=PREFIX))
+                    return
+                keyword = name.lower()
+                if any(self.keyword_of(s) == keyword for s in self.all_groups()) or \
+                        any(n.lower() == keyword for n in self.group_names().values()):
+                    self.reply(clid, t["exists"].format(k=name))
+                    return
+                try:
+                    sgid = self.copy_group(self.default_group(), name)
+                except Exception as exc:
+                    log("%s creating %s failed: %s" % (nick, name, exc))
+                    self.reply(clid, t["failed"])
+                    return
+                code, msg, _ = self.q.cmd(
+                    "servergroupaddperm sgid=%s permsid=i_group_needed_member_add_power permvalue=%s permnegated=0 permskip=0"
+                    "|permsid=i_group_needed_member_remove_power permvalue=%s permnegated=0 permskip=0"
+                    % (sgid, NEW_GROUP_POWER, NEW_GROUP_POWER))
+                if code != "0":
+                    log("setting member power on %s failed: %s" % (sgid, msg))
+                self.created.append(sgid)
+                save_created(self.created)
+                self.names_at = 0
+                log("%s created %s (%s)" % (nick, name, sgid))
+                self.reply(clid, t["created"].format(n=name, k=self.keyword_of(sgid), p=PREFIX))
+
+            def delete(self, clid, nick, keyword, t):
+                sgid = next((s for s in self.all_groups() if self.keyword_of(s) == keyword), None)
+                if sgid is None:
+                    self.reply(clid, t["unknown"].format(k=keyword, p=PREFIX))
+                    return
+                name = self.name_of(sgid)
+                if sgid not in self.created:
+                    self.reply(clid, t["not_created"].format(n=name, p=PREFIX))
+                    return
+                code, msg, _ = self.q.cmd("servergroupdel sgid=%s force=1" % sgid)
+                if code != "0":
+                    log("%s deleting %s (%s) failed: %s" % (nick, name, sgid, msg))
+                    self.reply(clid, t["failed"])
+                    return
+                self.created.remove(sgid)
+                save_created(self.created)
+                self.names_at = 0
+                log("%s deleted %s (%s)" % (nick, name, sgid))
+                self.reply(clid, t["deleted"].format(n=name))
+
             def handle(self, record):
                 mode = record.get("targetmode")
                 if mode != "1" and not (mode == "2" and CHANNEL_COMMANDS):
@@ -325,10 +452,6 @@ services:
                     return
                 self.last_use[uid] = now
 
-                if command == "help":
-                    self.reply(clid, t["help"].format(p=PREFIX))
-                    return
-
                 code, msg, lines = self.q.cmd("clientinfo clid=%s" % clid)
                 if code != "0" or not lines:
                     log("clientinfo failed: %s" % msg)
@@ -339,8 +462,21 @@ services:
                 groups = set(csv(info.get("client_servergroups", "")))
                 nick = record.get("invokername", "?")
 
-                keyword = " ".join(parts[1:]).lower()
-                if command == "group" and keyword:
+                is_admin = bool(ADMIN_GROUPS & groups)
+                name = " ".join(parts[1:])
+                keyword = name.lower()
+                if command == "help":
+                    text = t["help"].format(p=PREFIX)
+                    if is_admin:
+                        text += "\n" + t["admin_help"].format(p=PREFIX)
+                    self.reply(clid, text)
+                elif command in ("create", "delete") and not is_admin:
+                    self.reply(clid, t["no_admin"])
+                elif command == "create":
+                    self.create(clid, nick, name, t)
+                elif command == "delete":
+                    self.delete(clid, nick, keyword, t)
+                elif command == "group" and keyword:
                     self.toggle(clid, cldbid, nick, groups, keyword, t)
                 else:
                     self.list_groups(clid, groups, t)
@@ -371,8 +507,9 @@ services:
                     if code != "0":
                         log("register for channel chat failed: %s" % msg)
                 bot = Bot(q, me)
-                log("connected as %s in channel %s, %d group(s): %s" % (NICK, cid, len(SELF_GROUPS),
-                                                                        ", ".join(bot.keyword_of(s) for s in SELF_GROUPS)))
+                all_groups = bot.all_groups()
+                log("connected as %s in channel %s, %d group(s): %s" % (NICK, cid, len(all_groups),
+                                                                        ", ".join(bot.keyword_of(s) for s in all_groups)))
                 last = time.time()
                 while True:
                     if q.pending:
@@ -394,8 +531,8 @@ services:
             if not PASSWORD:
                 log("TS_PASSWORD is not set")
                 sys.exit(1)
-            if not SELF_GROUPS:
-                log("SELF_GROUPS is empty, nobody can join anything")
+            if not SELF_GROUPS and not ADMIN_GROUPS:
+                log("SELF_GROUPS and ADMIN_GROUPS are empty, nobody can join or create anything")
             while True:
                 try:
                     run()
