@@ -1,0 +1,401 @@
+# TeamSpeak self-service groups bot (Portainer stack)
+#
+# Logs in via ServerQuery and answers private messages, so people can join and
+# leave whitelisted server groups themselves (!groups, !group <name>, also in
+# German: !gruppen, !gruppe <name>). The bot script is embedded below, so this
+# file can be pasted into Portainer as it is. Reconnects automatically.
+#
+# Set these environment variables in Portainer (Stack -> Environment variables):
+#   TS_PASSWORD         (required) password of the query login
+#   SELF_GROUPS         (required) server group IDs people may join, comma separated
+#   TS_USER             query login name                (default: serveradmin)
+#   TS_HOST             host of the query port          (default: teamspeak6-server)
+#   TS_NETWORK          Docker network of the TeamSpeak container (default: teamspeak-server_default)
+#   TS_PORT             SSH query port                  (default: 10022)
+#   TS_SID              virtual server ID               (default: 1)
+#   TS_NICK             nickname of the bot             (default: Groups)
+#   TS_CID              channel ID to park the bot in   (default: empty = default channel)
+#   KEEPALIVE           seconds between keep-alives     (default: 60)
+#   PREFIX              command prefix                  (default: !)
+#   GROUP_KEYWORDS      command names, e.g. 12=cs2,14=modcs (default: group name in lower case)
+#   GROUP_DESCRIPTIONS  descriptions, separated by ;    e.g. 12=Counter-Strike;13=Palworld, Koop
+#   GROUP_REQUIRED      groups needed to join, e.g. 14=10+11 (default: everyone may join)
+
+services:
+  ts-self-groups:
+    image: python:3.12-slim
+    container_name: ts-self-groups
+    restart: unless-stopped
+    networks:
+      - teamspeak
+    environment:
+      PYTHONUNBUFFERED: "1"
+      TS_HOST: ${TS_HOST:-teamspeak6-server}
+      TS_PORT: ${TS_PORT:-10022}
+      TS_USER: ${TS_USER:-serveradmin}
+      TS_PASSWORD: ${TS_PASSWORD:?TS_PASSWORD must be set}
+      TS_SID: ${TS_SID:-1}
+      TS_NICK: ${TS_NICK:-Groups}
+      TS_CID: ${TS_CID:-}
+      KEEPALIVE: ${KEEPALIVE:-60}
+      PREFIX: ${PREFIX:-!}
+      SELF_GROUPS: ${SELF_GROUPS:-}
+      GROUP_KEYWORDS: ${GROUP_KEYWORDS:-}
+      GROUP_DESCRIPTIONS: ${GROUP_DESCRIPTIONS:-}
+      GROUP_REQUIRED: ${GROUP_REQUIRED:-}
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "2"
+    command:
+      - sh
+      - -c
+      - |
+        pip install --no-cache-dir -q paramiko >/dev/null 2>&1
+        cat > /tmp/self_groups.py <<'PYEOF'
+        import collections
+        import os
+        import socket
+        import sys
+        import time
+
+        import paramiko
+
+
+        def env(name, default=""):
+            return os.environ.get(name) or default
+
+
+        def log(text):
+            print(time.strftime("[%F %T] ") + text, flush=True)
+
+
+        def csv(value, sep=","):
+            return [x.strip() for x in value.split(sep) if x.strip()]
+
+
+        def mapping(name, sep=","):
+            result = {}
+            for item in csv(env(name), sep):
+                if "=" in item:
+                    key, value = item.split("=", 1)
+                    result[key.strip()] = value.strip()
+            return result
+
+
+        HOST = env("TS_HOST", "teamspeak6-server")
+        PORT = int(env("TS_PORT", "10022"))
+        USER = env("TS_USER", "serveradmin")
+        PASSWORD = env("TS_PASSWORD")
+        SID = env("TS_SID", "1")
+        NICK = env("TS_NICK", "Groups")
+        PARK_CID = env("TS_CID")
+        KEEPALIVE = int(env("KEEPALIVE", "60"))
+        PREFIX = env("PREFIX", "!")
+        SELF_GROUPS = csv(env("SELF_GROUPS"))
+        KEYWORDS = {k: v.lower() for k, v in mapping("GROUP_KEYWORDS").items()}
+        DESCRIPTIONS = mapping("GROUP_DESCRIPTIONS", ";")
+        REQUIRED = {k: set(csv(v, "+")) for k, v in mapping("GROUP_REQUIRED").items()}
+        COOLDOWN = 2.0
+        NAMES_TTL = 60
+
+        COMMANDS = {
+            "groups": ("groups", "en"), "group": ("group", "en"), "help": ("help", "en"),
+            "gruppen": ("groups", "de"), "gruppe": ("group", "de"), "hilfe": ("help", "de"),
+        }
+
+        TEXT = {
+            "en": {
+                "none": "There are no groups you can join right now.",
+                "title": "Groups:",
+                "hint": "[b]{p}group <name>[/b] adds you or takes you out again.",
+                "unknown": "There is no group called \"{k}\". [b]{p}groups[/b] shows which ones there are.",
+                "left": "You left [b]{n}[/b].",
+                "denied": "You're not allowed to join [b]{n}[/b].",
+                "joined": "You joined [b]{n}[/b].",
+                "failed": "That didn't work, please try again later.",
+                "help": "[b]{p}groups[/b] – shows all groups you can join yourself\n"
+                        "[b]{p}group <name>[/b] – adds you or takes you out again\n"
+                        "Auf Deutsch: [b]{p}gruppen[/b], [b]{p}gruppe <name>[/b]",
+            },
+            "de": {
+                "none": "Es gibt gerade keine Gruppen, denen du beitreten kannst.",
+                "title": "Gruppen:",
+                "hint": "[b]{p}gruppe <name>[/b] trägt dich ein oder wieder aus.",
+                "unknown": "Die Gruppe „{k}“ gibt es nicht. [b]{p}gruppen[/b] zeigt, welche es gibt.",
+                "left": "Du bist aus [b]{n}[/b] ausgetreten.",
+                "denied": "Du darfst [b]{n}[/b] nicht beitreten.",
+                "joined": "Du bist jetzt in [b]{n}[/b].",
+                "failed": "Das hat nicht geklappt, versuch es später nochmal.",
+                "help": "[b]{p}gruppen[/b] – zeigt alle Gruppen, denen du selbst beitreten kannst\n"
+                        "[b]{p}gruppe <name>[/b] – trägt dich ein oder wieder aus\n"
+                        "In English: [b]{p}groups[/b], [b]{p}group <name>[/b]",
+            },
+        }
+
+        ESCAPES = {"s": " ", "p": "|", "/": "/", "\\": "\\", "a": "\a", "b": "\b",
+                   "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v"}
+
+
+        def unesc(value):
+            out = []
+            i = 0
+            while i < len(value):
+                c = value[i]
+                if c == "\\" and i + 1 < len(value):
+                    out.append(ESCAPES.get(value[i + 1], value[i + 1]))
+                    i += 2
+                else:
+                    out.append(c)
+                    i += 1
+            return "".join(out)
+
+
+        def esc(value):
+            return (value.replace("\\", "\\\\").replace("/", "\\/").replace(" ", "\\s")
+                    .replace("|", "\\p").replace("\n", "\\n"))
+
+
+        def parse(line):
+            result = {}
+            for part in line.split(" "):
+                if "=" in part:
+                    key, value = part.split("=", 1)
+                    result[key] = unesc(value)
+                elif part:
+                    result[part] = ""
+            return result
+
+
+        class Query:
+            def __init__(self):
+                self.client = None
+                self.chan = None
+                self.buf = ""
+                self.pending = collections.deque()
+
+            def open(self):
+                self.client = paramiko.SSHClient()
+                self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                self.client.connect(HOST, port=PORT, username=USER, password=PASSWORD,
+                                    look_for_keys=False, allow_agent=False,
+                                    timeout=15, banner_timeout=15, auth_timeout=15)
+                self.chan = self.client.get_transport().open_session()
+                self.chan.invoke_shell()
+                self.chan.settimeout(1.0)
+                while self.read_line(2) is not None:
+                    pass
+
+            def close(self):
+                try:
+                    if self.client:
+                        self.client.close()
+                except Exception:
+                    pass
+
+            def read_line(self, timeout):
+                deadline = time.time() + timeout
+                while True:
+                    if "\n" in self.buf:
+                        line, self.buf = self.buf.split("\n", 1)
+                        return line.strip("\r ")
+                    if time.time() >= deadline:
+                        return None
+                    try:
+                        data = self.chan.recv(4096)
+                    except socket.timeout:
+                        continue
+                    if not data:
+                        raise ConnectionError("connection closed")
+                    self.buf += data.decode("utf-8", "replace")
+
+            def cmd(self, text):
+                self.chan.send(text + "\n")
+                lines = []
+                while True:
+                    line = self.read_line(15)
+                    if line is None:
+                        raise TimeoutError("no answer to: " + text.split(" ")[0])
+                    if line.startswith("notify"):
+                        self.pending.append(line)
+                        continue
+                    if line.startswith("error "):
+                        fields = parse(line[6:])
+                        return fields.get("id", "-1"), fields.get("msg", ""), lines
+                    if line:
+                        lines.append(line)
+
+
+        class Bot:
+            def __init__(self, q, me):
+                self.q = q
+                self.me = me
+                self.names = {}
+                self.names_at = 0
+                self.last_use = {}
+
+            def group_names(self):
+                if time.time() - self.names_at < NAMES_TTL:
+                    return self.names
+                code, msg, lines = self.q.cmd("servergrouplist")
+                if code == "0" and lines:
+                    self.names = {}
+                    for part in lines[0].split("|"):
+                        record = parse(part)
+                        self.names[record.get("sgid", "")] = record.get("name", "")
+                    self.names_at = time.time()
+                else:
+                    log("servergrouplist failed: %s" % msg)
+                return self.names
+
+            def name_of(self, sgid):
+                return self.group_names().get(sgid) or "Group " + sgid
+
+            def keyword_of(self, sgid):
+                return KEYWORDS.get(sgid) or self.name_of(sgid).lower()
+
+            def may_join(self, sgid, groups):
+                need = REQUIRED.get(sgid)
+                return not need or bool(need & groups)
+
+            def reply(self, clid, text):
+                code, msg, _ = self.q.cmd("sendtextmessage targetmode=1 target=%s msg=%s" % (clid, esc(text)))
+                if code != "0":
+                    log("sendtextmessage failed: %s" % msg)
+
+            def list_groups(self, clid, groups, t):
+                visible = [s for s in SELF_GROUPS if self.may_join(s, groups) or s in groups]
+                if not visible:
+                    self.reply(clid, t["none"])
+                    return
+                lines = [t["title"]]
+                for sgid in visible:
+                    mark = "[b]✓[/b]" if sgid in groups else "–"
+                    desc = DESCRIPTIONS.get(sgid)
+                    lines.append("%s [b]%s[/b]%s" % (mark, self.keyword_of(sgid), " – " + desc if desc else ""))
+                lines.append(t["hint"].format(p=PREFIX))
+                self.reply(clid, "\n".join(lines))
+
+            def toggle(self, clid, cldbid, nick, groups, keyword, t):
+                sgid = next((s for s in SELF_GROUPS if self.keyword_of(s) == keyword), None)
+                if sgid is None:
+                    self.reply(clid, t["unknown"].format(k=keyword, p=PREFIX))
+                    return
+                name = self.name_of(sgid)
+                if sgid in groups:
+                    code, msg, _ = self.q.cmd("servergroupdelclient sgid=%s cldbid=%s" % (sgid, cldbid))
+                    action, done = "left", "left"
+                elif not self.may_join(sgid, groups):
+                    self.reply(clid, t["denied"].format(n=name))
+                    return
+                else:
+                    code, msg, _ = self.q.cmd("servergroupaddclient sgid=%s cldbid=%s" % (sgid, cldbid))
+                    if code == "2561":
+                        code = "0"
+                    action, done = "joined", "joined"
+                if code != "0":
+                    log("%s %s (%s) failed: %s" % (nick, action, sgid, msg))
+                    self.reply(clid, t["failed"])
+                    return
+                log("%s %s %s (%s)" % (nick, action, name, sgid))
+                self.reply(clid, t[done].format(n=name))
+
+            def handle(self, record):
+                if record.get("targetmode") != "1":
+                    return
+                clid = record.get("invokerid", "")
+                text = record.get("msg", "").strip()
+                if not clid or clid == self.me or not text.startswith(PREFIX):
+                    return
+                parts = text[len(PREFIX):].split()
+                if not parts or parts[0].lower() not in COMMANDS:
+                    return
+                command, lang = COMMANDS[parts[0].lower()]
+                t = TEXT[lang]
+
+                uid = record.get("invokeruid", clid)
+                now = time.time()
+                if now - self.last_use.get(uid, 0) < COOLDOWN:
+                    return
+                self.last_use[uid] = now
+
+                if command == "help":
+                    self.reply(clid, t["help"].format(p=PREFIX))
+                    return
+
+                code, msg, lines = self.q.cmd("clientinfo clid=%s" % clid)
+                if code != "0" or not lines:
+                    log("clientinfo failed: %s" % msg)
+                    self.reply(clid, t["failed"])
+                    return
+                info = parse(lines[0])
+                cldbid = info.get("client_database_id", "")
+                groups = set(csv(info.get("client_servergroups", "")))
+                nick = record.get("invokername", "?")
+
+                keyword = " ".join(parts[1:]).lower()
+                if command == "group" and keyword:
+                    self.toggle(clid, cldbid, nick, groups, keyword, t)
+                else:
+                    self.list_groups(clid, groups, t)
+
+
+        def run():
+            q = Query()
+            try:
+                q.open()
+                code, msg, _ = q.cmd("use sid=%s" % SID)
+                if code != "0":
+                    raise RuntimeError("use failed: " + msg)
+                q.cmd("clientupdate client_nickname=%s" % esc(NICK))
+                code, msg, _ = q.cmd("servernotifyregister event=textprivate")
+                if code != "0":
+                    raise RuntimeError("register failed: " + msg)
+                _, _, lines = q.cmd("whoami")
+                me = parse(lines[0]).get("client_id") if lines else None
+                if PARK_CID and me:
+                    q.cmd("clientmove clid=%s cid=%s" % (me, PARK_CID))
+                bot = Bot(q, me)
+                log("connected as %s, %d group(s): %s" % (NICK, len(SELF_GROUPS),
+                                                         ", ".join(bot.keyword_of(s) for s in SELF_GROUPS)))
+                last = time.time()
+                while True:
+                    if q.pending:
+                        line = q.pending.popleft()
+                    else:
+                        line = q.read_line(1)
+                        if line is None:
+                            if time.time() - last >= KEEPALIVE:
+                                q.cmd("whoami")
+                                last = time.time()
+                            continue
+                    if line.startswith("notifytextmessage"):
+                        bot.handle(parse(line[len("notifytextmessage "):]))
+            finally:
+                q.close()
+
+
+        def main():
+            if not PASSWORD:
+                log("TS_PASSWORD is not set")
+                sys.exit(1)
+            if not SELF_GROUPS:
+                log("SELF_GROUPS is empty, nobody can join anything")
+            while True:
+                try:
+                    run()
+                except Exception as exc:
+                    log("session ended: %s" % exc)
+                time.sleep(30)
+
+
+        if __name__ == "__main__":
+            main()
+        PYEOF
+        exec python /tmp/self_groups.py
+
+networks:
+  teamspeak:
+    name: ${TS_NETWORK:-teamspeak-server_default}
+    external: true

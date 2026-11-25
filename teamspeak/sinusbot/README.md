@@ -6,6 +6,8 @@ Scripts for [SinusBot](https://www.sinusbot.com) on a TeamSpeak server. Copy a s
 
 Lets people join and leave server groups themselves by sending the bot a private message, in English or German. The bot answers in the language of the command.
 
+The same as a standalone ServerQuery bot, without SinusBot: [`../self-groups`](../self-groups).
+
 | English | German | |
 |---|---|---|
 | `!groups` | `!gruppen` | lists the groups you can join, with a ✓ on the ones you are in |
