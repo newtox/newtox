@@ -1,6 +1,6 @@
 registerPlugin({
     name: 'Self Groups',
-    version: '1.2.0',
+    version: '1.3.0',
     description: 'Lets clients join and leave whitelisted server groups by private message, in English or German, e.g. !group cs2 or !gruppe cs2.',
     author: 'newtox <futzy261@gmail.com>',
     backends: ['ts3'],
@@ -40,6 +40,7 @@ registerPlugin({
     const backend = require('backend');
 
     const COOLDOWN_MS = 2000;
+    const CONFIRM_MS = 1500;
     const COMMANDS = {
         groups: { cmd: 'groups', lang: 'en' },
         group: { cmd: 'group', lang: 'en' },
@@ -89,6 +90,7 @@ registerPlugin({
             left: n => `You left [b]${n}[/b].`,
             denied: n => `You're not allowed to join [b]${n}[/b].`,
             joined: n => `You joined [b]${n}[/b].`,
+            failed: () => "That didn't work, please try again later.",
             help: p => [
                 `[b]${p}groups[/b] – shows all groups you can join yourself`,
                 `[b]${p}group <name>[/b] – adds you or takes you out again`,
@@ -103,6 +105,7 @@ registerPlugin({
             left: n => `Du bist aus [b]${n}[/b] ausgetreten.`,
             denied: n => `Du darfst [b]${n}[/b] nicht beitreten.`,
             joined: n => `Du bist jetzt in [b]${n}[/b].`,
+            failed: () => 'Das hat nicht geklappt, versuch es später nochmal.',
             help: p => [
                 `[b]${p}gruppen[/b] – zeigt alle Gruppen, denen du selbst beitreten kannst`,
                 `[b]${p}gruppe <name>[/b] – trägt dich ein oder wieder aus`,
@@ -125,6 +128,23 @@ registerPlugin({
         client.chat([t.listTitle()].concat(lines, [t.listHint(prefix())]).join('\n'));
     }
 
+    function confirm(client, entry, shouldHave, done, t) {
+        const uid = client.uid();
+        const nick = client.name();
+        const name = groupName(entry);
+        setTimeout(() => {
+            const fresh = backend.getClientByUID(uid);
+            if (!fresh) return;
+            if (hasGroup(fresh, entry.groupId) === shouldHave) {
+                fresh.chat(done(name));
+                engine.log(`${nick} ${shouldHave ? 'joined' : 'left'} ${name} (${entry.groupId})`);
+            } else {
+                fresh.chat(t.failed());
+                engine.log(`${nick} ${shouldHave ? 'joining' : 'leaving'} ${name} (${entry.groupId}) failed, check the bot's group member add/remove power`);
+            }
+        }, CONFIRM_MS);
+    }
+
     function toggle(client, keyword, t) {
         const entry = allowed.find(e => keywordOf(e) === keyword);
         if (!entry) {
@@ -134,14 +154,12 @@ registerPlugin({
         const name = groupName(entry);
         if (hasGroup(client, entry.groupId)) {
             client.removeFromServerGroup(entry.groupId);
-            client.chat(t.left(name));
-            engine.log(`${client.name()} left ${name} (${entry.groupId})`);
+            confirm(client, entry, false, t.left, t);
         } else if (!mayUse(client, entry)) {
             client.chat(t.denied(name));
         } else {
             client.addToServerGroup(entry.groupId);
-            client.chat(t.joined(name));
-            engine.log(`${client.name()} joined ${name} (${entry.groupId})`);
+            confirm(client, entry, true, t.joined, t);
         }
     }
 
