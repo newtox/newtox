@@ -1,6 +1,7 @@
 # TeamSpeak self-service groups bot (Portainer stack)
 #
-# Logs in via ServerQuery and answers private messages, so people can join and
+# Logs in via ServerQuery and answers private messages and commands in its
+# channel's chat, so people can join and
 # leave whitelisted server groups themselves (!groups, !group <name>, also in
 # German: !gruppen, !gruppe <name>). The bot script is embedded below, so this
 # file can be pasted into Portainer as it is. Reconnects automatically.
@@ -17,6 +18,7 @@
 #   TS_CID              channel ID to park the bot in   (default: empty = default channel)
 #   KEEPALIVE           seconds between keep-alives     (default: 60)
 #   PREFIX              command prefix                  (default: !)
+#   CHANNEL_COMMANDS    also answer commands in the chat of the bot's channel, 1 or 0 (default: 1)
 #   GROUP_KEYWORDS      command names, e.g. 12=cs2,14=modcs (default: group name in lower case)
 #   GROUP_DESCRIPTIONS  descriptions, separated by ;    e.g. 12=Counter-Strike;13=Palworld, Koop
 #   GROUP_REQUIRED      groups needed to join, e.g. 14=10+11 (default: everyone may join)
@@ -39,6 +41,7 @@ services:
       TS_CID: ${TS_CID:-}
       KEEPALIVE: ${KEEPALIVE:-60}
       PREFIX: ${PREFIX:-!}
+      CHANNEL_COMMANDS: ${CHANNEL_COMMANDS:-1}
       SELF_GROUPS: ${SELF_GROUPS:-}
       GROUP_KEYWORDS: ${GROUP_KEYWORDS:-}
       GROUP_DESCRIPTIONS: ${GROUP_DESCRIPTIONS:-}
@@ -93,6 +96,7 @@ services:
         PARK_CID = env("TS_CID")
         KEEPALIVE = int(env("KEEPALIVE", "60"))
         PREFIX = env("PREFIX", "!")
+        CHANNEL_COMMANDS = env("CHANNEL_COMMANDS", "1") != "0"
         SELF_GROUPS = csv(env("SELF_GROUPS"))
         KEYWORDS = {k: v.lower() for k, v in mapping("GROUP_KEYWORDS").items()}
         DESCRIPTIONS = mapping("GROUP_DESCRIPTIONS", ";")
@@ -302,7 +306,8 @@ services:
                 self.reply(clid, t[done].format(n=name))
 
             def handle(self, record):
-                if record.get("targetmode") != "1":
+                mode = record.get("targetmode")
+                if mode != "1" and not (mode == "2" and CHANNEL_COMMANDS):
                     return
                 clid = record.get("invokerid", "")
                 text = record.get("msg", "").strip()
@@ -354,11 +359,20 @@ services:
                     raise RuntimeError("register failed: " + msg)
                 _, _, lines = q.cmd("whoami")
                 me = parse(lines[0]).get("client_id") if lines else None
+                cid = parse(lines[0]).get("client_channel_id") if lines else None
                 if PARK_CID and me:
-                    q.cmd("clientmove clid=%s cid=%s" % (me, PARK_CID))
+                    code, msg, _ = q.cmd("clientmove clid=%s cid=%s" % (me, PARK_CID))
+                    if code == "0":
+                        cid = PARK_CID
+                    else:
+                        log("clientmove failed: %s" % msg)
+                if CHANNEL_COMMANDS and cid:
+                    code, msg, _ = q.cmd("servernotifyregister event=textchannel id=%s" % cid)
+                    if code != "0":
+                        log("register for channel chat failed: %s" % msg)
                 bot = Bot(q, me)
-                log("connected as %s, %d group(s): %s" % (NICK, len(SELF_GROUPS),
-                                                         ", ".join(bot.keyword_of(s) for s in SELF_GROUPS)))
+                log("connected as %s in channel %s, %d group(s): %s" % (NICK, cid, len(SELF_GROUPS),
+                                                                        ", ".join(bot.keyword_of(s) for s in SELF_GROUPS)))
                 last = time.time()
                 while True:
                     if q.pending:

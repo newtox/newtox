@@ -1,8 +1,8 @@
 # TeamSpeak self-service groups
 
-A Compose/Portainer stack with a ServerQuery bot that lets people join and leave server groups themselves, for example one group per game. They send the bot a private message, in English or German, and it answers in the language of the command. The whole bot (a Python script) is embedded in `docker-compose.yml`, so the stack can be pasted into Portainer as it is.
+A Compose/Portainer stack with a ServerQuery bot that lets people join and leave server groups themselves, for example one group per game. They send the bot a private message or write the command in the chat of the bot's channel, in English or German. The bot answers by private message, in the language of the command. The whole bot (a Python script) is embedded in `docker-compose.yml`, so the stack can be pasted into Portainer as it is.
 
-The bot is a query client, so it shows up without microphone or speaker and doesn't need SinusBot. If you'd rather run it inside SinusBot, use [`../sinusbot/self-groups.js`](../sinusbot/self-groups.js), which does the same.
+The bot is a query client, so it shows up without microphone or speaker and doesn't need SinusBot. The TeamSpeak 6 client doesn't show query clients at all, so people using it can't double-click the bot. They write the commands in the chat of the channel the bot sits in (`TS_CID`) instead, and get the answer as a private message. If you'd rather run it inside SinusBot, use [`../sinusbot/self-groups.js`](../sinusbot/self-groups.js), which does the same.
 
 ## Commands
 
@@ -16,7 +16,7 @@ The bot is a query client, so it shows up without microphone or speaker and does
 
 ## How it works
 
-1. The bot logs in via the SSH query port, sets its nickname and registers for private text messages.
+1. The bot logs in via the SSH query port, sets its nickname, moves into `TS_CID` and registers for private messages and the chat of that channel.
 2. On a command it reads the sender's server groups with `clientinfo`.
 3. `!group` adds or removes the group with `servergroupaddclient` / `servergroupdelclient` and answers by private message.
 
@@ -56,7 +56,9 @@ The group needs:
 | `i_client_private_textmessage_power` | answer, at least the needed power of your users |
 | `i_client_needed_private_textmessage_power` | no higher than the private message power of your users, otherwise nobody can message the bot |
 | `i_group_member_add_power`, `i_group_member_remove_power` | at least the needed add/remove power of the groups in `SELF_GROUPS`, and lower than that of mod, admin and punishment groups. Then the bot can't hand those out even if something goes wrong |
-| `i_client_needed_serverquery_view_power` | no higher than the `i_client_serverquery_view_power` of your users, so they see the bot and can double-click it. Keep it high on the groups of your other query clients and only they stay hidden |
+| `i_client_needed_serverquery_view_power` | no higher than the `i_client_serverquery_view_power` of your users, so TeamSpeak 3 clients see the bot and can double-click it. Keep it high on the groups of your other query clients and only they stay hidden |
+| `b_serverquery_login`, `b_virtualserver_select` | log in and select the server, needed when the login isn't in Guest Server Query anymore |
+| `b_channel_join_permanent`, `i_channel_join_power` | move into `TS_CID` |
 
 ## Variables
 
@@ -70,9 +72,10 @@ The group needs:
 | `TS_PORT` | `10022` | SSH query port |
 | `TS_SID` | `1` | virtual server ID |
 | `TS_NICK` | `Groups` | nickname of the bot |
-| `TS_CID` | empty | channel ID to park the bot in |
+| `TS_CID` | empty | channel ID to park the bot in. People write their commands in this channel's chat |
 | `KEEPALIVE` | `60` | seconds between keep-alives |
 | `PREFIX` | `!` | command prefix |
+| `CHANNEL_COMMANDS` | `1` | also answer commands written in the chat of the bot's channel, `0` turns it off |
 | `GROUP_KEYWORDS` | group name in lower case | command names, e.g. `12=cs2,14=modcs` |
 | `GROUP_DESCRIPTIONS` | empty | descriptions shown in the list, separated by `;` so they can contain commas, e.g. `12=Counter-Strike;13=Palworld, Koop` |
 | `GROUP_REQUIRED` | everyone may join | groups needed to join, `+` between several, e.g. `14=10+11` |
