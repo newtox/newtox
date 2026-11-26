@@ -10,7 +10,7 @@
 #   TS_NETWORK   Docker network of the TeamSpeak container (default: teamspeak-server_default)
 #   TS_PORT      SSH query port                 (default: 10022)
 #   TS_SID       virtual server ID              (default: 1)
-#   TS_NICK      nickname shown in the tree     (default: Query)
+#   TS_NICK      nickname shown in the tree     (default: empty = keep the login name)
 #   TS_CID       channel ID to park in          (default: empty = stay in default channel)
 #   KEEPALIVE    seconds between keep-alives    (default: 60, must stay below the query idle timeout)
 
@@ -27,7 +27,7 @@ services:
       TS_USER: ${TS_USER:-serveradmin}
       SSHPASS: ${TS_PASSWORD:?TS_PASSWORD must be set}
       TS_SID: ${TS_SID:-1}
-      TS_NICK: ${TS_NICK:-Query}
+      TS_NICK: ${TS_NICK:-}
       TS_CID: ${TS_CID:-}
       KEEPALIVE: ${KEEPALIVE:-60}
     logging:
@@ -48,7 +48,7 @@ services:
 
           {
             echo "use sid=$$TS_SID"
-            echo "clientupdate client_nickname=$$NICK"
+            if [ -n "$$TS_NICK" ]; then echo "clientupdate client_nickname=$$NICK"; fi
             echo "whoami"
 
             i=0
